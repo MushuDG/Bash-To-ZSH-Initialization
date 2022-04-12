@@ -6,7 +6,7 @@ if [[ $input == "Y" || $input == "y" ]]; then
 fi
 sudo apt update -y
 sudo apt upgrade -y
-sudo apt install git zsh wget curl -y
+sudo apt install git zsh wget curl neofetch -y
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
@@ -15,4 +15,5 @@ rm -rf ~/.p10k.zsh
 cd ~
 wget https://raw.githubusercontent.com/MushuDG/PiInitialisation/main/.p10k.zsh
 wget https://raw.githubusercontent.com/MushuDG/PiInitialisation/main/.zshrc
+clear
 zsh
