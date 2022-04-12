@@ -21,6 +21,9 @@ cd ./PiInitialisation
 
 ## Oh My ZSH - Configuration
 On the folowing question type `Y` to change the default shell:
-INSERTCAPT
+
+![OMZSH](https://github.com/MushuDG/PiInitialisation/blob/main/screenshots/OhMyZshConfig.png)
+
 Arrived on the ZSH/Oh My ZSH interface, type `exit` to continue the installation:
-InsertCAPT
+
+![OMZSH2](https://github.com/MushuDG/PiInitialisation/blob/main/screenshots/OhMyZshConfig2.png)
