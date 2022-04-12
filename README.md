@@ -19,7 +19,7 @@ cd ./PiInitialisation
 ./install.sh
 ```
 
-## Oh My ZSH - Configuration
+### Oh My ZSH - Configuration
 On the folowing question type `Y` to change the default shell:
 
 ![OMZSH](https://github.com/MushuDG/PiInitialisation/blob/main/screenshots/OhMyZshConfig.png)
