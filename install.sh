@@ -13,5 +13,7 @@ git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$
 git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
 rm -rf ~/.zshrc
 rm -rf ~/.p10k.zsh
+cd ~
 wget https://raw.githubusercontent.com/MushuDG/PiInitialisation/main/.p10k.zsh
 wget https://raw.githubusercontent.com/MushuDG/PiInitialisation/main/.zshrc
+zsh
