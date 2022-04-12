@@ -1,5 +1,9 @@
 #!/bin/bash
-passwd
+echo "Do you want to change user's password? [Y,n]"
+read input
+if [[ $input == "Y" || $input == "y" ]]; then
+        passwd
+fi
 sudo apt update -y
 sudo apt upgrade -y
 sudo apt install git zsh wget curl -y
