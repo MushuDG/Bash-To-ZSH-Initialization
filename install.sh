@@ -15,5 +15,6 @@ rm -rf ~/.p10k.zsh
 cd ~
 wget https://raw.githubusercontent.com/MushuDG/PiInitialisation/main/.p10k.zsh
 wget https://raw.githubusercontent.com/MushuDG/PiInitialisation/main/.zshrc
+rm -rf ./PiInitialisation
 clear
 zsh
