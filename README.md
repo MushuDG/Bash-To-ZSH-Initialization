@@ -1,4 +1,4 @@
-# PiInitialisation Script
+# PiInitialization Script
 
 ## Description
 
