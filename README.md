@@ -33,7 +33,7 @@ chmod -R 740 ./PiInitialization/
 ## Installation
 Run install script:
 ```
-cd ./PiInitialisation
+cd ./PiInitialization
 ./install.sh
 ```
 
@@ -45,4 +45,4 @@ cd ./PiInitialisation
 
 ## License
 
-This script is released under the [GPL-3.0 license](https://raw.githubusercontent.com/MushuDG/PiInitialisation/main/LICENSE).
+This script is released under the [GPL-3.0 license](https://raw.githubusercontent.com/MushuDG/PiInitialization/main/LICENSE).
