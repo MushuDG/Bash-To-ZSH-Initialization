@@ -34,9 +34,14 @@ chmod -R 740 ./PiInitialization/
 Run install script:
 ```
 cd ./PiInitialization
-./install.sh
+./debian-based-install.sh
 ```
+or
 
+```
+cd ./PiInitialization
+./arch-based-install.sh
+```
 ## Notes
 
 - Make sure to review the script before execution.
