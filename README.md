@@ -7,12 +7,19 @@ The `Bash-To-ZSH-Initialization` script is designed to streamline the setup proc
 ## 🚀 Features 
 
 ✔️ Change user password.
+
 ✔️ Update and upgrade system packages.
+
 ✔️ Install Git, Zsh, wget, curl, and neofetch.
+
 ✔️ Set up Oh My Zsh with default configuration.
+
 ✔️ Clone Powerlevel10k, Zsh-autosuggestions, and Zsh-syntax-highlighting.
+
 ✔️ Remove existing Zsh configuration files.
+
 ✔️ Download and apply new Zsh configuration files.
+
 ✔️ Optional: Set Zsh as the default shell.
 
 ## 🛠️ Compatible Hardware
