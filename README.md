@@ -49,6 +49,13 @@ or
 cd ./Bash-To-ZSH-Initialization
 ./arch-based-install.sh
 ```
+or
+
+```
+cd ./Bash-To-ZSH-Initialization
+./macos-based-install.sh
+```
+
 ## ⚠️ Notes
 
 - Make sure to review the script before execution.
