@@ -39,7 +39,7 @@ echo -ne " [✓] Updating Homebrew... Done\n"
 
 # Install necessary packages
 echo -ne "Installing packages..."
-brew install git zsh wget curl neofetch bat thefuck > /dev/null 2>&1 &
+brew install git zsh wget curl neofetch bat thefuck fzf > /dev/null 2>&1 &
 spinner
 echo -ne " [✓] Installing packages... Done\n"
 
@@ -60,6 +60,12 @@ spinner
 git clone https://github.com/fdellwing/zsh-bat.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-bat > /dev/null 2>&1 &
 spinner
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting > /dev/null 2>&1 &
+spinner
+git clone https://github.com/agkozak/zsh-z ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-z > /dev/null 2>&1 &
+spinner
+cp ${ZSH_CUSTOM:-~/.oh-my-zsh/}/plugins/extract ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/extract > /dev/null 2>&1 &
+spinner
+cp ${ZSH_CUSTOM:-~/.oh-my-zsh/}/plugins/command-not-found ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/command-not-found > /dev/null 2>&1 &
 spinner
 echo -ne " [✓] Cloning plugins... Done\n"
 

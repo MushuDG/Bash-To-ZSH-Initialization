@@ -39,7 +39,7 @@ echo -ne " [✓] Updating packages... Done\n"
 
 # Install necessary packages
 echo -ne "Installing packages..."
-sudo apt install git zsh wget curl neofetch bat python3-dev python3-pip python3-setuptools thefuck -y > /dev/null 2>&1 &
+sudo apt install git zsh wget curl neofetch bat python3-dev python3-pip python3-setuptools thefuck fzf -y > /dev/null 2>&1 &
 spinner
 echo -ne " [✓] Installing packages... Done\n"
 

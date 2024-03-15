@@ -37,7 +37,7 @@ echo -ne " [✓] Updating packages... Done\n"
 
 # Install necessary packages
 echo -ne "Installing packages..."
-sudo pacman -S --noconfirm git zsh wget curl neofetch bat thefuck > /dev/null 2>&1 &
+sudo pacman -S --noconfirm git zsh wget curl neofetch bat thefuck fzf > /dev/null 2>&1 &
 spinner
 echo -ne " [✓] Installing packages... Done\n"
 
