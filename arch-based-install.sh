@@ -22,13 +22,16 @@ progress_bar() {
     local progress_char="▋"
     local total_char=30
     local increment=$(( duration / total_char ))
+    local percentage=0
     printf " ["
     while (( progress < duration )); do
         printf "%s" "$progress_char"
         ((progress += increment))
         sleep 1
+        ((percentage = (progress * 100) / duration))
+        printf "] %3d%%" "$percentage"
+        printf "\b\b\b\b\b\b"
     done
-    printf "]"
 }
 
 # Fancy hacker interface
