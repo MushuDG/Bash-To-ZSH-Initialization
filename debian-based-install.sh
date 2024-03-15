@@ -39,7 +39,7 @@ echo -ne " [✓] Updating packages... Done\n"
 
 # Install necessary packages
 echo -ne "Installing packages..."
-sudo apt install git zsh wget curl neofetch bat python3-dev python3-pip python3-setuptools -y > /dev/null 2>&1 &
+sudo apt install git zsh wget curl neofetch bat python3-dev python3-pip python3-setuptools thefuck -y > /dev/null 2>&1 &
 spinner
 echo -ne " [✓] Installing packages... Done\n"
 
@@ -68,12 +68,6 @@ spinner
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting > /dev/null 2>&1 &
 spinner
 echo -ne " [✓] Cloning plugins... Done\n"
-
-# Install thefuck plugin
-echo -ne "Installing thefuck plugin..."
-pip3 install thefuck --user > /dev/null 2>&1 &
-spinner
-echo -ne " [✓] Installing thefuck plugin... Done\n"
 
 # Remove existing zsh configuration files
 [ -e ~/.zshrc ] && rm -f ~/.zshrc
