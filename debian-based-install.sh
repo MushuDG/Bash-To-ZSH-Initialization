@@ -42,6 +42,7 @@ wget https://raw.githubusercontent.com/MushuDG/Bash-To-ZSH-Initialization/main/.
 wget https://raw.githubusercontent.com/MushuDG/Bash-To-ZSH-Initialization/main/.zshrc -O ~/.zshrc
 
 # Clean up
+cd ..
 rm -rf ./Bash-To-ZSH-Initialization
 
 # Set Zsh as the default shell if user agrees
