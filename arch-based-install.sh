@@ -15,7 +15,7 @@ fi
 sudo pacman -Syu --noconfirm || { echo "Error updating packages."; exit 1; }
 
 # Install necessary packages
-sudo pacman -S --noconfirm git zsh wget curl neofetch bat || { echo "Error installing packages."; exit 1; }
+sudo pacman -S --noconfirm git zsh wget curl neofetch bat thefuck || { echo "Error installing packages."; exit 1; }
 
 # Install Oh My Zsh
 echo "Installing Oh My Zsh..."

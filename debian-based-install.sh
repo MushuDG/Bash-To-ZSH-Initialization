@@ -16,7 +16,7 @@ sudo apt update -y || { echo "Error updating packages."; exit 1; }
 sudo apt upgrade -y || { echo "Error upgrading packages."; exit 1; }
 
 # Install necessary packages
-sudo apt install git zsh wget curl neofetch bat -y
+sudo apt install git zsh wget curl neofetch bat python3-dev python3-pip python3-setuptools -y
 
 # Install Oh My Zsh
 echo "Installing Oh My Zsh..."
@@ -34,6 +34,9 @@ git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-m
 git clone https://github.com/MichaelAquilina/zsh-you-should-use.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/you-should-use
 git clone https://github.com/fdellwing/zsh-bat.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-bat
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
+# Install thefuck plugin
+pip3 install thefuck --user
 
 # Remove existing zsh configuration files
 [ -e ~/.zshrc ] && rm -f ~/.zshrc
