@@ -16,7 +16,7 @@ sudo apt update -y || { echo "Error updating packages."; exit 1; }
 sudo apt upgrade -y || { echo "Error upgrading packages."; exit 1; }
 
 # Install necessary packages
-sudo apt install git zsh wget curl neofetch -y
+sudo apt install git zsh wget curl neofetch bat -y
 
 # Install Oh My Zsh
 echo "Installing Oh My Zsh..."
