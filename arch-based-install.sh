@@ -37,11 +37,11 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:
 [ -e ~/.p10k.zsh ] && rm -f ~/.p10k.zsh
 
 # Download new zsh configuration files
-wget https://raw.githubusercontent.com/MushuDG/PiInitialization/main/.p10k.zsh -O ~/.p10k.zsh
-wget https://raw.githubusercontent.com/MushuDG/PiInitialization/main/.zshrc -O ~/.zshrc
+wget https://raw.githubusercontent.com/MushuDG/Bash-To-ZSH-Initialization/main/.p10k.zsh -O ~/.p10k.zsh
+wget https://raw.githubusercontent.com/MushuDG/Bash-To-ZSH-Initialization/main/.zshrc -O ~/.zshrc
 
 # Clean up
-rm -rf ./PiInitialization
+rm -rf ./Bash-To-ZSH-Initialization
 
 # Set Zsh as the default shell if the user agrees
 echo "Set Zsh as the default shell? [Y/n]"
