@@ -27,9 +27,11 @@ if [ ! -d ~/.oh-my-zsh ]; then
     exit 1
 fi
 
-# Clone powerlevel10k, zsh-autosuggestions, and zsh-syntax-highlighting
+# Clone powerlevel10k, zsh-autosuggestions, zsh-you-should-use, zsh-bat and zsh-syntax-highlighting
 git clone --depth=1 $powerlevel10k_repo ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+git clone https://github.com/MichaelAquilina/zsh-you-should-use.git $ZSH_CUSTOM/plugins/you-should-use
+git clone https://github.com/fdellwing/zsh-bat.git $ZSH_CUSTOM/plugins/zsh-bat
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 
 # Remove existing zsh configuration files
