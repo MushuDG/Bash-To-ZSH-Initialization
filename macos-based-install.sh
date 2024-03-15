@@ -21,25 +21,25 @@ sleep 1
 echo "Installing necessary tools and packages:"
 sleep 1
 
-# Prompt user to change password
-read -p "Do you want to change the user's password? [Y/n] " input
-input=${input:-Y} 
-if [[ $input == "Y" || $input == "y" ]]; then
-    echo "Changing password..."
-    passwd
+# Check if Homebrew is installed, if not, install it
+if ! command -v brew &> /dev/null; then
+    echo -ne " [                    ] Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" > /dev/null 2>&1 &
+    spinner
+    echo -ne " [✓] Installing Homebrew... Done\n"
+else
+    echo -e " [✓] Homebrew already installed."
 fi
 
-# Update and upgrade packages
-echo -ne " [                    ] Updating packages..."
-sudo apt update -y > /dev/null 2>&1 &
+# Update Homebrew
+echo -ne " [                    ] Updating Homebrew..."
+brew update > /dev/null 2>&1 &
 spinner
-sudo apt upgrade -y > /dev/null 2>&1 &
-spinner
-echo -ne " [✓] Updating packages... Done\n"
+echo -ne " [✓] Updating Homebrew... Done\n"
 
 # Install necessary packages
 echo -ne " [                    ] Installing packages..."
-sudo apt install git zsh wget curl neofetch bat python3-dev python3-pip python3-setuptools -y > /dev/null 2>&1 &
+brew install git zsh wget curl neofetch bat thefuck > /dev/null 2>&1 &
 spinner
 echo -ne " [✓] Installing packages... Done\n"
 
@@ -48,12 +48,6 @@ echo -ne " [                    ] Installing Oh My Zsh..."
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" </dev/null > /dev/null 2>&1 &
 spinner
 echo -ne " [✓] Installing Oh My Zsh... Done\n"
-
-# Check if Oh My Zsh installation succeeded
-if [ ! -d ~/.oh-my-zsh ]; then
-    echo "Oh My Zsh installation failed."
-    exit 1
-fi
 
 # Clone powerlevel10k, zsh-autosuggestions, zsh-you-should-use, zsh-bat and zsh-syntax-highlighting
 echo -ne " [                    ] Cloning plugins..."
@@ -68,12 +62,6 @@ spinner
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting > /dev/null 2>&1 &
 spinner
 echo -ne " [✓] Cloning plugins... Done\n"
-
-# Install thefuck plugin
-echo -ne " [                    ] Installing thefuck plugin..."
-pip3 install thefuck --user > /dev/null 2>&1 &
-spinner
-echo -ne " [✓] Installing thefuck plugin... Done\n"
 
 # Remove existing zsh configuration files
 [ -e ~/.zshrc ] && rm -f ~/.zshrc
@@ -94,7 +82,7 @@ rm -rf ./Bash-To-ZSH-Initialization > /dev/null 2>&1 &
 spinner
 echo -ne " [✓] Cleaning up... Done\n"
 
-# Set Zsh as the default shell if user agrees
+# Set Zsh as the default shell if the user agrees
 echo "Set Zsh as the default shell? [Y/n]"
 read set_zsh_default
 if [[ $set_zsh_default == "Y" || $set_zsh_default == "y" ]]; then
