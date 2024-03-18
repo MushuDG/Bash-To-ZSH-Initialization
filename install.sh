@@ -49,11 +49,13 @@ spinner() {
 # Returns:      - None
 ################################################################################
 ask_for_pywal() {
-    echo "Are you using Pywal? [Y/n]"
+    echo "Are you using Pywal? [Y/n] (default: N)" # Prompt user to set Zsh as default shell
     read use_pywal
     if [[ $use_pywal == "Y" || $use_pywal == "y" ]]; then
-        sed -i '6s/^.//; 9s/^.//; 12s/^.//' ./config/.zshrc
+        sed -i '6s/^.//; 9s/^.//; 12s/^.//' ./.zshrc
         echo "Pywal configurations applied."
+    else
+        echo "Pywal configurations not applied."
     fi
 }
 
@@ -212,16 +214,20 @@ clean_up() {
 # Returns:      - None
 ################################################################################
 set_zsh_default() {
-    echo "Set Zsh as the default shell? [Y/n]" # Prompt user to set Zsh as default shell
-    read set_zsh_default                  # Read user input
-    if [[ $set_zsh_default == "Y" || $set_zsh_default == "y" ]]; then # Check if user confirms
+    echo "Set Zsh as the default shell? [Y/n] (default: Y)" # Prompt user to set Zsh as default shell
+    read -r set_zsh_default                  # Read user input
+    set_zsh_default="${set_zsh_default:-Y}"   # Set default value to Y if user input is empty
+    if [[ $set_zsh_default == "N" || $set_zsh_default == "n" ]]; then # Check if user confirms
+        echo "Zsh is not set as the default shell."
+    else
         echo "Changing default shell..."    # Display process
-        chsh -s $(which zsh)                # Change default shell to Zsh
+        chsh -s "$(command -v zsh)"                # Change default shell to Zsh
         echo "Zsh is now the default shell." # Inform user about successful change
         # Start zsh
         zsh                                 # Start Zsh shell
     fi
 }
+
 
 ################################################################################
 # Function
