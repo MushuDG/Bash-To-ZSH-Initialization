@@ -1,4 +1,4 @@
-# MacOS wal users uncomment folowing line:
+# Pywal Section
 # Import colorscheme from 'wal' asynchronously
 # &   # Run the process in the background.
 # ( ) # Hide shell job control messages.
@@ -11,6 +11,7 @@
 # To add support for TTYs this line can be optionally added.
 #source ~/.cache/wal/colors-tty.sh
 
+# Enable neofetch
 neofetch
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
