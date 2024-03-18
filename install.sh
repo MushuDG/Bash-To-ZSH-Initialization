@@ -49,10 +49,10 @@ spinner() {
 # Returns:      - None
 ################################################################################
 ask_for_pywal() {
-    echo "Are you using Pywal? [Y/n] (default: N)" # Prompt user to set Zsh as default shell
+    echo "Are you using Pywal? [Y/n] (default: N)" # asks the user if they are using pywal
     read use_pywal
     if [[ $use_pywal == "Y" || $use_pywal == "y" ]]; then
-        sed -i '6s/^.//; 9s/^.//; 12s/^.//' ./.zshrc
+        sed -i '6s/^.//; 9s/^.//; 12s/^.//' ./config/.zshrc
         echo "Pywal configurations applied."
     else
         echo "Pywal configurations not applied."
