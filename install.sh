@@ -52,7 +52,7 @@ ask_for_pywal() {
     echo "Are you using Pywal? [Y/n]"
     read use_pywal
     if [[ $use_pywal == "Y" || $use_pywal == "y" ]]; then
-        sed -i '6s/^.//; 9s/^.//; 12s/^.//' ./.zshrc
+        sed -i '6s/^.//; 9s/^.//; 12s/^.//' ./config/.zshrc
         echo "Pywal configurations applied."
     fi
 }
