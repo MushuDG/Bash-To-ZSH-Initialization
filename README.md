@@ -2,30 +2,52 @@
 
 ## 📝 Description
 
-The `Bash-To-ZSH-Initialization` script is designed to streamline the setup process for a Raspberry Pi, including password change, system updates, installation of essential packages, and configuration of the Zsh shell with Oh My Zsh and Powerlevel10k theme.
+The "Bash-To-ZSH-Initialization" script aims to streamline the transition from the Bash shell environment to Zsh. It automates the process of installing and configuring Zsh along with commonly used plugins and configurations, providing an enhanced and personalized user experience for Zsh users.
 
 ## 🚀 Features 
+✔️ **Detect Package Manager**: Detect the package manager being used and execute appropriate actions.
 
-✔️ Change user password.
+✔️ **Update and Install Packages**: Update and install necessary packages using the appropriate package manager.
 
-✔️ Update and upgrade system packages.
+✔️ **Install Oh My Zsh**: Install the Oh My Zsh framework for Zsh customization.
 
-✔️ Install Git, Zsh, wget, curl, and neofetch.
+✔️ **Clone Zsh Plugins**: Clone Zsh plugins from GitHub repositories to enhance Zsh functionality.
 
-✔️ Set up Oh My Zsh with default configuration.
+✔️ **Remove Existing Zsh Configurations**: Remove existing Zsh configuration files if present.
 
-✔️ Clone Powerlevel10k, Zsh-autosuggestions, and Zsh-syntax-highlighting.
+✔️ **Download and Move Configuration Files**: Download new Zsh configuration files and move them to appropriate locations.
 
-✔️ Remove existing Zsh configuration files.
+✔️ **Clean Up**: Clean up temporary files and directories after completion.
 
-✔️ Download and apply new Zsh configuration files.
+✔️ **Set Zsh as Default Shell**: Prompt the user to set Zsh as the default shell and execute the change.
 
-✔️ Optional: Set Zsh as the default shell.
+## ⚙️ Plugins installed
+
+These plugins enhance the functionality of Zsh by providing various features such as command auto-suggestion, advanced syntax highlighting, improved file system navigation, and more.
+
+* git
+* zsh-autosuggestions
+* zsh-syntax-highlighting
+* you-should-use
+* zsh-bat
+* thefuck
+* z
+* fzf
+* extract
+* command-not-found
+
 
 ## 🛠️ Compatible Hardware
-* Raspberry Pi 3 Model B+
-* [RaspberryPiOS 2022-04-04 - Debian 11 - Linux Kernel 5.15](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2022-04-07/2022-04-04-raspios-bullseye-armhf-lite.img.xz)
-* Bash Shell
+
+Tested successfully on the following systems:
+
+✔️ [RaspberryPiOS 2022-04-04 - Debian 11 - Linux Kernel 5.15](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2022-04-07/2022-04-04-raspios-bullseye-armhf-lite.img.xz)
+
+✔️ MacOS
+
+✔️ WSL: Arch Linux
+
+✔️ WSL: Ubuntu
 
 ## 🛠️ Setup
 Clone the project using the following git command:
@@ -35,25 +57,12 @@ git clone https://github.com/MushuDG/Bash-To-ZSH-Initialization.git
 Assign the appropriate permissions with the chmod command:
 ```bash
 chmod -R 740 ./Bash-To-ZSH-Initialization/
-
 ```
 ## 🚀 Installation
 Run install script:
 ```
 cd ./Bash-To-ZSH-Initialization
-./debian-based-install.sh
-```
-or
-
-```
-cd ./Bash-To-ZSH-Initialization
-./arch-based-install.sh
-```
-or
-
-```
-cd ./Bash-To-ZSH-Initialization
-./macos-based-install.sh
+./install.sh
 ```
 
 ## ⚠️ Notes
@@ -64,4 +73,4 @@ cd ./Bash-To-ZSH-Initialization
 
 ## 📄 License
 
-This script is released under the [GPL-3.0 license](https://raw.githubusercontent.com/MushuDG/Bash-To-ZSH-Initialization/main/LICENSE).
+This script is released under the [MIT license](https://raw.githubusercontent.com/MushuDG/Bash-To-ZSH-Initialization/main/LICENSE).
