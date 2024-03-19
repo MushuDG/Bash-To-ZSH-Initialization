@@ -135,7 +135,6 @@ install_oh_my_zsh() {
 ################################################################################
 clone_plugins() {
     local plugins=(
-        "https://github.com/romkatv/powerlevel10k.git"
         "https://github.com/zsh-users/zsh-autosuggestions.git"
         "https://github.com/MichaelAquilina/zsh-you-should-use.git"
         "https://github.com/fdellwing/zsh-bat.git"
@@ -148,6 +147,7 @@ clone_plugins() {
         git clone --depth=1 "$plugin" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/$(basename $plugin .git)" >/dev/null 2>&1 &# Clone plugin repository in background
         spinner # Call spinner function to display animation
     done
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
     echo -ne " [✓] Cloning plugins... Done\n" # Update status after completion
 }
 
@@ -180,7 +180,6 @@ moving_config_files() {
     cp ${ZSH_CUSTOM:-~/.oh-my-zsh/}/plugins/command-not-found ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/command-not-found >/dev/null 2>&1 &# Copy command-not-found plugin
     spinner                                       # Call spinner function to display animation
     echo -ne "Downloading configuration files..." # Display downloading process
-    mkdir 
     cp ./config/.p10k.zsh ~/.p10k.zsh >/dev/null 2>&1 &# Copy .p10k.zsh configuration
     spinner # Call spinner function to display animation
     cp ./config/.zshrc ~/.zshrc >/dev/null 2>&1 &# Copy .zshrc configuration
