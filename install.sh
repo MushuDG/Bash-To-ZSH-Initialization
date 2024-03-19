@@ -180,6 +180,7 @@ moving_config_files() {
     cp ${ZSH_CUSTOM:-~/.oh-my-zsh/}/plugins/command-not-found ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/command-not-found >/dev/null 2>&1 &# Copy command-not-found plugin
     spinner                                       # Call spinner function to display animation
     echo -ne "Downloading configuration files..." # Display downloading process
+    mkdir 
     cp ./config/.p10k.zsh ~/.p10k.zsh >/dev/null 2>&1 &# Copy .p10k.zsh configuration
     spinner # Call spinner function to display animation
     cp ./config/.zshrc ~/.zshrc >/dev/null 2>&1 &# Copy .zshrc configuration
