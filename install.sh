@@ -43,6 +43,24 @@ spinner() {
 # Function
 ################################################################################
 ################################################################################
+# Name:         verify_root_permissions
+# Goal:         Verifying if the user have the right permissions
+# Parameters:   - None
+# Returns:      - None
+################################################################################
+verify_root_permissions(){
+    # Check if the user is root
+    if [[ $EUID -ne 0 ]]; then
+        echo "This script must be run with root privileges. Please run with sudo."
+        echo "Example: sudo ./install.sh"
+        exit 1
+    fi
+}
+
+################################################################################
+# Function
+################################################################################
+################################################################################
 # Name:         ask_for_pywal
 # Goal:         Prompt the user if they are using pywal
 # Parameters:   - None
@@ -238,6 +256,7 @@ set_zsh_default() {
 # Returns:      - None
 ################################################################################
 main() {
+    verify_root_permissions
     ask_for_pywal
     detect_package_manager # Execute package manager detection
     install_oh_my_zsh      # Execute Oh My Zsh installation
