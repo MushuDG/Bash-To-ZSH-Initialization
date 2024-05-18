@@ -70,7 +70,7 @@ ask_for_pywal() {
     echo "Are you using Pywal? [Y/n] (default: N)" # asks the user if they are using pywal
     read use_pywal
     if [[ $use_pywal == "Y" || $use_pywal == "y" ]]; then
-        sed -i'.bak' -e '6s/^.//' -e '9s/^.//' -e '12s/^.//' ./config/.zshrc
+        sed -i'.bak' -e '9s/^.//' -e '12s/^.//' -e '15s/^.//' ./config/.zshrc
         echo "Pywal configurations applied."
     else
         echo "Pywal configurations not applied."
@@ -94,12 +94,12 @@ update_and_install_packages() {
     local packages=("${@:3}")  # Array of packages to install
 
     echo -ne "Updating packages..." # Display update process
-    $update_command >/dev/null 2>&1 &# Execute update command in background
+    $update_command >/dev/null 2>&1 & # Execute update command in background
     spinner                                     # Call spinner function to display animation
     echo -ne " [✓] Updating packages... Done\n" # Update status after completion
 
     echo -ne "Installing packages..." # Display installation process
-    $install_command "${packages[@]}" >/dev/null 2>&1 &# Execute install command in background
+    $install_command "${packages[@]}" >/dev/null 2>&1 & # Execute install command in background
     spinner                                       # Call spinner function to display animation
     echo -ne " [✓] Installing packages... Done\n" # Update status after completion
 }
