@@ -52,9 +52,7 @@ verify_root_permissions(){
     # Check if the user is root
     if [[ $EUID -ne 0 ]]; then
         echo "This script requires root privileges to perform certain tasks."
-        read -rsp $'Press enter to authenticate with sudo...\n'
-        sudo "$0" "$@"
-        exit $?
+        sudo echo "Please enter your password:"
     fi
 }
 
@@ -138,7 +136,7 @@ detect_package_manager() {
 ################################################################################
 install_oh_my_zsh() {
     echo -ne "Installing Oh My Zsh..."                                                                              # Display installation process
-    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" </dev/null >/dev/null 2>&1 # Execute installation in background
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" </dev/null >/dev/null 2>&1 # Execute installation in background
     spinner                                                                                                         # Call spinner function to display animation
     echo -ne " [✓] Installing Oh My Zsh... Done\n"                                                                  # Update status after completion
 }
