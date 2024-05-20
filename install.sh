@@ -69,7 +69,7 @@ ask_for_pywal() {
     echo "Are you using Pywal? [Y/n] (default: N)" # asks the user if they are using pywal
     read use_pywal
     if [[ $use_pywal == "Y" || $use_pywal == "y" ]]; then
-        sed -i'.bak' -e '9s/^.//' -e '12s/^.//' -e '15s/^.//' ./config/.zshrc
+        sed -i'.bak' -e '6s/^.//' -e '9s/^.//' -e '12s/^.//' ./config/.zshrc
         echo "Pywal configurations applied."
     else
         echo "Pywal configurations not applied."

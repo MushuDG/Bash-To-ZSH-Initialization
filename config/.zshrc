@@ -1,6 +1,3 @@
-# fzf Section
-eval "$(fzf --zsh)"
-
 # Pywal Section
 # Import colorscheme from 'wal' asynchronously
 # &   # Run the process in the background.
@@ -13,6 +10,9 @@ eval "$(fzf --zsh)"
 
 # To add support for TTYs this line can be optionally added.
 #source ~/.cache/wal/colors-tty.sh
+
+# fzf Section
+eval "$(fzf --zsh)"
 
 # Enable neofetch
 neofetch
