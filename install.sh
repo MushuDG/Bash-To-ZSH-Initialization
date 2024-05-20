@@ -240,8 +240,9 @@ set_zsh_default() {
         echo "Zsh is not set as the default shell."
     else
         echo "Changing default shell..."     # Display process
-        chsh -s "$(command -v zsh)"          # Change default shell to Zsh
+        chsh -s /bin/zsh                     # Change default shell to Zsh
         echo "Zsh is now the default shell." # Inform user about successful change
+        clear
         zsh # Start Zsh shell
     fi
 }
