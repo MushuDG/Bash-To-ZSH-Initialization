@@ -62,7 +62,7 @@ chmod -R 740 ./Bash-To-ZSH-Initialization/
 Run install script:
 ```
 cd ./Bash-To-ZSH-Initialization
-sudo ./install.sh
+./install.sh
 ```
 
 ## ⚠️ Notes
