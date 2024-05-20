@@ -1,6 +1,6 @@
 #!/bin/bash
 ################################################################################
-# General informations
+# General information
 ################################################################################
 # Author:               MushuDG
 # Project:              Bash-To-ZSH-Initialization
@@ -49,7 +49,7 @@ spinner() {
 # Returns:      - None
 ################################################################################
 verify_root_permissions(){
-        # Check if the user is root
+    # Check if the user is root
     if [[ $EUID -ne 0 ]]; then
         echo "This script requires root privileges to perform certain tasks."
         read -rsp $'Press enter to authenticate with sudo...\n'
@@ -94,15 +94,15 @@ update_and_install_packages() {
     local install_command="$2" # Command to install packages
     local packages=("${@:3}")  # Array of packages to install
 
-    echo -ne "Updating packages..." # Display update process
-    $update_command >/dev/null 2>&1 & # Execute update command in background
+    echo -ne "Updating packages..."             # Display update process
+    $update_command >/dev/null 2>&1             # Execute update command in background
     spinner                                     # Call spinner function to display animation
     echo -ne " [✓] Updating packages... Done\n" # Update status after completion
 
-    echo -ne "Installing packages..." # Display installation process
-    $install_command "${packages[@]}" >/dev/null 2>&1 & # Execute install command in background
-    spinner                                       # Call spinner function to display animation
-    echo -ne " [✓] Installing packages... Done\n" # Update status after completion
+    echo -ne "Installing packages..."                      # Display installation process
+    $install_command "${packages[@]}" >/dev/null 2>&1      # Execute install command in background
+    spinner                                                # Call spinner function to display animation
+    echo -ne " [✓] Installing packages... Done\n"          # Update status after completion
 }
 
 ################################################################################
@@ -137,10 +137,10 @@ detect_package_manager() {
 # Returns:      - None
 ################################################################################
 install_oh_my_zsh() {
-    echo -ne "Installing Oh My Zsh..." # Display installation process
-    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" </dev/null >/dev/null 2>&1 &# Execute installation in background
-    spinner                                        # Call spinner function to display animation
-    echo -ne " [✓] Installing Oh My Zsh... Done\n" # Update status after completion
+    echo -ne "Installing Oh My Zsh..."                                                                              # Display installation process
+    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" </dev/null >/dev/null 2>&1 # Execute installation in background
+    spinner                                                                                                         # Call spinner function to display animation
+    echo -ne " [✓] Installing Oh My Zsh... Done\n"                                                                  # Update status after completion
 }
 
 ################################################################################
@@ -161,12 +161,12 @@ clone_plugins() {
         "https://github.com/agkozak/zsh-z.git"
     )
 
-    echo -ne "Cloning plugins..."     # Display cloning process
-    for plugin in "${plugins[@]}"; do # Loop through plugins array
-        git clone --depth=1 "$plugin" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/$(basename $plugin .git)" >/dev/null 2>&1 &# Clone plugin repository in background
-        spinner # Call spinner function to display animation
+    echo -ne "Cloning plugins..."                                                                                               # Display cloning process
+    for plugin in "${plugins[@]}"; do                                                                                           # Loop through plugins array
+        git clone --depth=1 "$plugin" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/$(basename $plugin .git)" >/dev/null 2>&1 # Clone plugin repository in background
+        spinner                                                                                                                 # Call spinner function to display animation
     done
-    echo -ne " [✓] Cloning plugins... Done\n" # Update status after completion
+    echo -ne " [✓] Cloning plugins... Done\n"                                                                                   # Update status after completion
 }
 
 ################################################################################
@@ -179,7 +179,7 @@ clone_plugins() {
 # Returns:      - None
 ################################################################################
 remove_zsh_config() {
-    [ -e ~/.zshrc ] && rm -f ~/.zshrc       # Remove .zshrc if exists
+    [ -e ~/.zshrc ] && rm -f ~/.zshrc
     [ -e ~/.p10k.zsh ] && rm -f ~/.p10k.zsh # Remove .p10k.zsh if exists
 }
 
@@ -193,16 +193,16 @@ remove_zsh_config() {
 # Returns:      - None
 ################################################################################
 moving_config_files() {
-    cp ${ZSH_CUSTOM:-~/.oh-my-zsh/}/plugins/extract ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/extract >/dev/null 2>&1 &# Copy extract plugin
+    cp ${ZSH_CUSTOM:-~/.oh-my-zsh/}/plugins/extract ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/extract >/dev/null 2>&1 # Copy extract plugin
     spinner # Call spinner function to display animation
-    cp ${ZSH_CUSTOM:-~/.oh-my-zsh/}/plugins/command-not-found ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/command-not-found >/dev/null 2>&1 &# Copy command-not-found plugin
+    cp ${ZSH_CUSTOM:-~/.oh-my-zsh/}/plugins/command-not-found ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/command-not-found >/dev/null 2>&1 # Copy command-not-found plugin
     spinner                                       # Call spinner function to display animation
     echo -ne "Downloading configuration files..." # Display downloading process
-    cp ./config/.p10k.zsh ~/.p10k.zsh >/dev/null 2>&1 &# Copy .p10k.zsh configuration
+    cp ./config/.p10k.zsh ~/.p10k.zsh >/dev/null 2>&1 # Copy .p10k.zsh configuration
     spinner # Call spinner function to display animation
-    cp ./config/.zshrc ~/.zshrc >/dev/null 2>&1 &# Copy .zshrc configuration
+    cp ./config/.zshrc ~/.zshrc >/dev/null 2>&1 # Copy .zshrc configuration
     spinner                                                   # Call spinner function to display animation
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k >/dev/null 2>&1 &
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k >/dev/null 2>&1 
     spinner
     echo -ne " [✓] Downloading configuration files... Done\n" # Update status after completion
 }
@@ -219,7 +219,7 @@ moving_config_files() {
 clean_up() {
     echo -ne "Cleaning up..." # Display cleanup process
     cd ..                     # Navigate to parent directory
-    rm -rf ./Bash-To-ZSH-Initialization >/dev/null 2>&1 &# Remove directory and its content
+    rm -rf ./Bash-To-ZSH-Initialization >/dev/null 2>&1 # Remove directory and its content
     spinner                               # Call spinner function to display animation
     echo -ne " [✓] Cleaning up... Done\n" # Update status after completion
 }
