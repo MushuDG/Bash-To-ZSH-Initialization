@@ -49,11 +49,12 @@ spinner() {
 # Returns:      - None
 ################################################################################
 verify_root_permissions(){
-    # Check if the user is root
+        # Check if the user is root
     if [[ $EUID -ne 0 ]]; then
-        echo "This script must be run with root privileges. Please run with sudo."
-        echo "Example: sudo ./install.sh"
-        exit 1
+        echo "This script requires root privileges to perform certain tasks."
+        read -rsp $'Press enter to authenticate with sudo...\n'
+        sudo "$0" "$@"
+        exit $?
     fi
 }
 
