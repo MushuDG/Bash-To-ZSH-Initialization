@@ -65,6 +65,44 @@ cd ./Bash-To-ZSH-Initialization
 ./install.sh
 ```
 
+## Fonts
+
+Powerlevel10k doesn't require custom fonts but can take advantage of them if they are available.
+It works well with [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts),
+[Source Code Pro](https://github.com/adobe-fonts/source-code-pro),
+[Font Awesome](https://fontawesome.com/), [Powerline](https://github.com/powerline/fonts), and even
+the default system fonts. The full choice of style options is available only when using
+[Nerd Fonts](https://github.com/ryanoasis/nerd-fonts).
+
+👇 **Recommended font**: Meslo Nerd Font patched for Powerlevel10k. 👇
+
+### <a name='recommended-meslo-nerd-font-patched-for-powerlevel10k'></a><a name='font'></a>Meslo Nerd Font patched for Powerlevel10k
+
+Gorgeous monospace font designed by Jim Lyles for Bitstream, customized by the same for Apple,
+further customized by André Berg, and finally patched by yours truly with customized scripts
+originally developed by Ryan L McIntyre of Nerd Fonts. Contains all glyphs and symbols that
+Powerlevel10k may need. Battle-tested in dozens of different terminals on all major operating
+systems.
+
+#### Automatic font installation
+
+If you are using iTerm2 or Termux, `p10k configure` can install the recommended font for you.
+Simply answer `Yes` when asked whether to install *Meslo Nerd Font*.
+
+If you are using a different terminal, proceed with manual font installation. 👇
+
+#### Manual font installation
+
+1. Download these four ttf files:
+   - [MesloLGS NF Regular.ttf](
+       https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf)
+   - [MesloLGS NF Bold.ttf](
+       https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf)
+   - [MesloLGS NF Italic.ttf](
+       https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf)
+   - [MesloLGS NF Bold Italic.ttf](
+       https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf)
+
 ## ⚠️ Notes
 
 - Make sure to review the script before execution.
