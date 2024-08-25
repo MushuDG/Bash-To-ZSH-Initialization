@@ -119,6 +119,8 @@ detect_package_manager() {
         update_and_install_packages "brew update" "brew install" git zsh wget curl neofetch bat thefuck fzf
     elif command -v apt &>/dev/null; then
         update_and_install_packages "sudo apt update -y" "sudo apt install -y" git zsh wget curl neofetch bat python3-dev python3-pip python3-setuptools thefuck fzf
+    elif command -v pkg &>/dev/null; then
+        update_and_install_packages "pkg upgrade -y" "pkg install -y" git zsh wget curl neofetch bat fzf
     else
         echo "Unsupported package manager. The only supported package manager are Homebrew; APT; Pacman"
         exit 1
