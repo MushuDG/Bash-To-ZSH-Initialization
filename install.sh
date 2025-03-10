@@ -31,8 +31,8 @@ spinner() {
 
     while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
         local temp=${spinstr#?}
-        printf " [%c]  " "${spinstr:0:1}"           # Print spinner
-        local spinstr=$temp${spinstr%"$temp"} # Update spinner
+        printf " [%s]  " "${spinstr[i]}"      # Print spinner
+         i=$(( (i + 1) % n ))                 # Update spinner
         sleep $delay                          # Wait for animation delay
         printf "\b\b\b\b\b\b"                 # Move cursor back to overwrite spinner
     done
