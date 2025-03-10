@@ -27,7 +27,7 @@ spinner() {
     local delay=0.1
 
     # Spinner characters
-    local spinstr=('⣾' '⣽' '⣻' '⢿' '⡿' '⣟' '⣯' '⣷')
+    local spinstr=('⣷' '⣯' '⣟' '⡿' '⢿' '⣻' '⣽' '⣾')
     local i=0
     local n=${#spinstr[@]}
 
