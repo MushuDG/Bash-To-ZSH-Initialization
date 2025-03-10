@@ -1,6 +1,4 @@
 #!/bin/bash
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
 ################################################################################
 # General information
 ################################################################################
@@ -33,7 +31,7 @@ spinner() {
 
     while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
         local temp=${spinstr#?}
-        printf " [%c]  " "$spinstr"           # Print spinner
+        printf " [%c]  " "${spinstr:0:1}"           # Print spinner
         local spinstr=$temp${spinstr%"$temp"} # Update spinner
         sleep $delay                          # Wait for animation delay
         printf "\b\b\b\b\b\b"                 # Move cursor back to overwrite spinner
