@@ -31,13 +31,20 @@ spinner() {
     local i=0
     local n=${#spinstr[@]}
 
+    # Hide cursor
+    tput civis
+    trap "tput cnorm; exit" INT TERM
+
     while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
-        local temp=${spinstr#?}
-        printf " [%s]  " "${spinstr[i]}"      # Print spinner
-         i=$(( (i + 1) % n ))                 # Update spinner
-        sleep $delay                          # Wait for animation delay
-        printf "\b\b\b\b\b\b"                 # Move cursor back to overwrite spinner
+        printf " [%s]  " "${spinstr[i]}"            # Print spinner
+        i=$(( (i + 1) % n ))                        # Update spinner index
+        sleep $delay                                # Wait for animation delay
+        printf "\b\b\b\b\b\b"                       # Move cursor back to overwrite spinner
     done
+
+    # Restore cursor
+    trap - INT TERM
+    tput cnorm
     printf "    \b\b\b\b" # Clear spinner after completion
 }
 
