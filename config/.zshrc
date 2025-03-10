@@ -16,7 +16,8 @@
 
 #Aliases section
 alias q=exit
-alias vim=neovim
+alias vim=nvim
+alias neovim=nvim
 
 # Enable neofetch
 neofetch
