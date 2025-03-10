@@ -27,7 +27,9 @@ spinner() {
     local delay=0.1
 
     # Spinner characters
-        local spinstr=('⣾' '⣽' '⣻' '⢿' '⡿' '⣟' '⣯' '⣷')
+    local spinstr=('⣾' '⣽' '⣻' '⢿' '⡿' '⣟' '⣯' '⣷')
+    local i=0
+    local n=${#spinstr[@]}
 
     while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
         local temp=${spinstr#?}
