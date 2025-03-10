@@ -14,10 +14,6 @@
 # fzf Section
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-#Aliases section
-alias q=exit
-alias vim=nvim
-alias neovim=nvim
 
 # Enable neofetch
 neofetch
@@ -130,6 +126,9 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias q=exit
+alias vim=nvim
+alias neovim=nvim
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
