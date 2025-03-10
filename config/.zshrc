@@ -12,7 +12,11 @@
 #source ~/.cache/wal/colors-tty.sh
 
 # fzf Section
-eval "$(fzf --zsh)"
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+#Aliases section
+alias q=exit
+alias vim=neovim
 
 # Enable neofetch
 neofetch

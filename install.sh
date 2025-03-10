@@ -27,7 +27,7 @@ spinner() {
     local delay=0.1
 
     # Spinner characters
-    local spinstr='|/-\'
+    local spinstr='⣾⣽⣻⢿⡿⣟⣯⣷'
 
     while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
         local temp=${spinstr#?}
@@ -113,14 +113,15 @@ update_and_install_packages() {
 # Returns:      - None
 ################################################################################
 detect_package_manager() {
+    COMMON_PACKAGES=(bat curl fzf git neofetch neovim thefuck uv wget zsh)
     if command -v pacman &>/dev/null; then
-        update_and_install_packages "sudo pacman -Syu --noconfirm" "sudo pacman -S --noconfirm" git zsh wget curl neofetch bat thefuck fzf
+        update_and_install_packages "sudo pacman -Syu --noconfirm" "sudo pacman -S --noconfirm" git zsh wget curl neofetch bat thefuck fzf neovim
     elif command -v brew &>/dev/null; then
-        update_and_install_packages "brew update" "brew install" git zsh wget curl neofetch bat thefuck fzf
+        update_and_install_packages "brew update" "brew install" git zsh wget curl neofetch bat thefuck fzf neovim
     elif command -v apt &>/dev/null; then
-        update_and_install_packages "sudo apt update -y" "sudo apt install -y" git zsh wget curl neofetch bat python3-dev python3-pip python3-setuptools thefuck fzf
+        update_and_install_packages "sudo apt update -y" "sudo apt install -y" git zsh wget curl neofetch bat python3-dev python3-pip python3-setuptools thefuck fzf neovim
     elif command -v pkg &>/dev/null; then
-        update_and_install_packages "pkg upgrade -y" "pkg install -y" git zsh wget curl neofetch bat fzf
+        update_and_install_packages "pkg upgrade -y" "pkg install -y" git zsh wget curl neofetch bat fzf neovim
     else
         echo "Unsupported package manager. The only supported package manager are Homebrew; APT; Pacman"
         exit 1
