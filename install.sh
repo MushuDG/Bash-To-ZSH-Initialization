@@ -36,16 +36,16 @@ spinner() {
     trap "tput cnorm; exit" INT TERM
 
     while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
-        printf " [%s]  " "${spinstr[i]}"    # Print spinner
-        i=$(( (i + 1) % n ))                # Update spinner index
-        sleep $delay                        # Wait for animation delay
-        printf "\b\b\b\b\b\b"               # Move cursor back to overwrite spinner
+        printf " [%s]  " "${spinstr[i]}"            # Print spinner
+        i=$(( (i + 1) % n ))                        # Update spinner index
+        sleep $delay                                # Wait for animation delay
+        printf "\b\b\b\b\b\b"                       # Move cursor back to overwrite spinner
     done
 
     # Restore cursor
     trap - INT TERM
     tput cnorm
-    printf "    \b\b\b\b"   # Clear spinner after completion
+    printf "    \b\b\b\b" # Clear spinner after completion
 }
 
 ################################################################################
@@ -75,8 +75,8 @@ verify_root_permissions(){
 # Returns:      - None
 ################################################################################
 ask_for_pywal() {
-    echo "Are you using Pywal? [Y/n] (default: N)"  # asks the user if they are using pywal
-    read -r use_pywal
+    echo "Are you using Pywal? [Y/n] (default: N)" # asks the user if they are using pywal
+    read use_pywal
     if [[ $use_pywal == "Y" || $use_pywal == "y" ]]; then
         sed -i'.bak' -e '6s/^.//' -e '9s/^.//' -e '12s/^.//' ./config/.zshrc
         echo "Pywal configurations applied."
@@ -101,6 +101,10 @@ update_and_install_packages() {
     local install_command="$2" # Command to install packages
     local packages=("${@:3}")  # Array of packages to install
 
+    echo -ne "Updating packages..."             # Display update process
+    $update_command >/dev/null 2>&1 &             # Execute update command in background
+    spinner                                     # Call spinner function to display animation
+    echo -ne " [✓] Updating packages... Done\n" # Update status after completion
     echo -ne "Updating packages..."                 # Display update process
     $update_command >/dev/null 2>&1 &               # Execute update command in background
     spinner                                         # Call spinner function to display animation
@@ -122,18 +126,17 @@ update_and_install_packages() {
 # Returns:      - None
 ################################################################################
 detect_package_manager() {
-    local COMMON_PACKAGES=(bat curl fzf git neofetch neovim python3-full python3-pip wget zsh)
-
+    COMMON_PACKAGES=(bat curl fzf git neofetch neovim thefuck uv wget zsh)
     if command -v pacman &>/dev/null; then
-        update_and_install_packages "sudo pacman -Syu --noconfirm" "sudo pacman -S --noconfirm" "${COMMON_PACKAGES[@]}"
+        update_and_install_packages "sudo pacman -Syu --noconfirm" "sudo pacman -S --noconfirm" git zsh wget curl neofetch bat thefuck fzf neovim
     elif command -v brew &>/dev/null; then
-        update_and_install_packages "brew update" "brew install" "${COMMON_PACKAGES[@]}"
+        update_and_install_packages "brew update" "brew install" git zsh wget curl neofetch bat thefuck fzf neovim
     elif command -v apt &>/dev/null; then
-        update_and_install_packages "sudo apt update -y" "sudo apt install -y" "${COMMON_PACKAGES[@]}"
+        update_and_install_packages "sudo apt update -y" "sudo apt install -y" git zsh wget curl neofetch bat python3-dev python3-pip python3-setuptools thefuck fzf neovim
     elif command -v pkg &>/dev/null; then
-        update_and_install_packages "pkg upgrade -y" "pkg install -y" "${COMMON_PACKAGES[@]}"
+        update_and_install_packages "pkg upgrade -y" "pkg install -y" git zsh wget curl neofetch bat fzf neovim
     else
-        echo "Unsupported package manager. Supported managers: Homebrew, APT, Pacman."
+        echo "Unsupported package manager. The only supported package manager are Homebrew; APT; Pacman"
         exit 1
     fi
     git clone https://github.com/DL909/thefuck.git &>/dev/null
@@ -206,15 +209,15 @@ remove_zsh_config() {
 # Returns:      - None
 ################################################################################
 moving_config_files() {
-    cp ${ZSH_CUSTOM:-~/.oh-my-zsh/}/plugins/extract ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/extract >/dev/null 2>&1 &                        # Copy extract plugin
-    spinner                                                                                                                                     # Call spinner function to display animation
-    cp ${ZSH_CUSTOM:-~/.oh-my-zsh/}/plugins/command-not-found ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/command-not-found >/dev/null 2>&1 &    # Copy command-not-found plugin
-    spinner                                                                                                                                     # Call spinner function to display animation
-    echo -ne "Downloading configuration files..."                                                                                               # Display downloading process
-    cp ./config/.p10k.zsh ~/.p10k.zsh >/dev/null 2>&1 &                                                                                         # Copy .p10k.zsh configuration
-    spinner                                                                                                                                     # Call spinner function to display animation
-    cp ./config/.zshrc ~/.zshrc >/dev/null 2>&1 &                                                                                               # Copy .zshrc configuration
-    spinner                                                                                                                                     # Call spinner function to display animation
+    cp ${ZSH_CUSTOM:-~/.oh-my-zsh/}/plugins/extract ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/extract >/dev/null 2>&1 & # Copy extract plugin
+    spinner # Call spinner function to display animation
+    cp ${ZSH_CUSTOM:-~/.oh-my-zsh/}/plugins/command-not-found ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/command-not-found >/dev/null 2>&1 & # Copy command-not-found plugin
+    spinner                                       # Call spinner function to display animation
+    echo -ne "Downloading configuration files..." # Display downloading process
+    cp ./config/.p10k.zsh ~/.p10k.zsh >/dev/null 2>&1 & # Copy .p10k.zsh configuration
+    spinner # Call spinner function to display animation
+    cp ./config/.zshrc ~/.zshrc >/dev/null 2>&1 & # Copy .zshrc configuration
+    spinner                                                   # Call spinner function to display animation
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k >/dev/null 2>&1 & 
     spinner
     echo -ne " [✓]\n"                                                                                  # Update status after completion
@@ -253,11 +256,11 @@ set_zsh_default() {
     if [[ $set_zsh_default == "N" || $set_zsh_default == "n" ]]; then # Check if user confirms
         echo "Zsh is not set as the default shell."
     else
-        echo "Changing default shell..."        # Display process
-        chsh -s /bin/zsh                        # Change default shell to Zsh
-        echo "Zsh is now the default shell."    # Inform user about successful change
+        echo "Changing default shell..."     # Display process
+        chsh -s /bin/zsh                     # Change default shell to Zsh
+        echo "Zsh is now the default shell." # Inform user about successful change
         clear
-        zsh                                     # Start Zsh shell
+        zsh # Start Zsh shell
     fi
 }
 
