@@ -76,7 +76,7 @@ verify_root_permissions(){
 ################################################################################
 ask_for_pywal() {
     echo "Are you using Pywal? [Y/n] (default: N)"  # asks the user if they are using pywal
-    read use_pywal
+    read -r use_pywal
     if [[ $use_pywal == "Y" || $use_pywal == "y" ]]; then
         sed -i'.bak' -e '6s/^.//' -e '9s/^.//' -e '12s/^.//' ./config/.zshrc
         echo "Pywal configurations applied."
@@ -104,12 +104,12 @@ update_and_install_packages() {
     echo -ne "Updating packages..."                 # Display update process
     $update_command >/dev/null 2>&1 &               # Execute update command in background
     spinner                                         # Call spinner function to display animation
-    echo -ne " [✓] Updating packages... Done\n"    # Update status after completion
+    echo -ne " [✓]\n"    # Update status after completion
 
     echo -ne "Installing packages..."                       # Display installation process
     $install_command "${packages[@]}" >/dev/null 2>&1 &     # Execute install command in background
     spinner                                                 # Call spinner function to display animation
-    echo -ne " [✓] Installing packages... Done\n"           # Update status after completion
+    echo -ne " [✓]\n"           # Update status after completion
 }
 
 ################################################################################
@@ -122,20 +122,22 @@ update_and_install_packages() {
 # Returns:      - None
 ################################################################################
 detect_package_manager() {
-    local COMMON_PACKAGES=(bat curl fzf git neofetch neovim thefuck uv wget zsh)
+    local COMMON_PACKAGES=(bat curl fzf git neofetch neovim python3-full python3-pip wget zsh)
 
     if command -v pacman &>/dev/null; then
         update_and_install_packages "sudo pacman -Syu --noconfirm" "sudo pacman -S --noconfirm" "${COMMON_PACKAGES[@]}"
     elif command -v brew &>/dev/null; then
         update_and_install_packages "brew update" "brew install" "${COMMON_PACKAGES[@]}"
     elif command -v apt &>/dev/null; then
-        update_and_install_packages "sudo apt update -y" "sudo apt install -y" "${COMMON_PACKAGES[@]}" python3-dev python3-pip python3-setuptools
+        update_and_install_packages "sudo apt update -y" "sudo apt install -y" "${COMMON_PACKAGES[@]}"
     elif command -v pkg &>/dev/null; then
         update_and_install_packages "pkg upgrade -y" "pkg install -y" "${COMMON_PACKAGES[@]}"
     else
         echo "Unsupported package manager. Supported managers: Homebrew, APT, Pacman."
         exit 1
     fi
+    git clone https://github.com/DL909/thefuck.git &>/dev/null
+    pip install ./thefuck --break-system-packages &>/dev/null
 }
 
 ################################################################################
@@ -151,7 +153,7 @@ install_oh_my_zsh() {
     echo -ne "Installing Oh My Zsh..."                                                                                              # Display installation process
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" </dev/null >/dev/null 2>&1 &    # Execute installation in background
     spinner                                                                                                                         # Call spinner function to display animation
-    echo -ne " [✓] Installing Oh My Zsh... Done\n"                                                                                  # Update status after completion
+    echo -ne " [✓]\n"                                                                                  # Update status after completion
 }
 
 ################################################################################
@@ -177,7 +179,7 @@ clone_plugins() {
         git clone --depth=1 "$plugin" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/$(basename $plugin .git)" >/dev/null 2>&1 &   # Clone plugin repository in background
         spinner                                                                                                                     # Call spinner function to display animation
     done    
-    echo -ne " [✓] Cloning plugins... Done\n"                                                                                       # Update status after completion
+    echo -ne " [✓]\n"                                                                                       # Update status after completion
 }
 
 ################################################################################
@@ -215,7 +217,7 @@ moving_config_files() {
     spinner                                                                                                                                     # Call spinner function to display animation
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k >/dev/null 2>&1 & 
     spinner
-    echo -ne " [✓] Downloading configuration files... Done\n"                                                                                  # Update status after completion
+    echo -ne " [✓]\n"                                                                                  # Update status after completion
 }
 
 ################################################################################
@@ -232,7 +234,7 @@ clean_up() {
     cd ..                                                   # Navigate to parent directory
     rm -rf ./Bash-To-ZSH-Initialization >/dev/null 2>&1 &   # Remove directory and its content
     spinner                                                 # Call spinner function to display animation
-    echo -ne " [✓] Cleaning up... Done\n"                   # Update status after completion
+    echo -ne " [✓]\n"                   # Update status after completion
 }
 
 ################################################################################

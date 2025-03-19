@@ -97,12 +97,13 @@ zstyle ':omz:update' mode auto      # update automatically without asking
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-you-should-use zsh-bat thefuck z fzf extract command-not-found) 
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-you-should-use zsh-bat z fzf extract command-not-found) 
 
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
-
+export PATH="$HOME/.local/bin:$PATH"
+command -v thefuck &>/dev/null && eval "$(thefuck --alias)"
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
