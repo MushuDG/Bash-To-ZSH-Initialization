@@ -14,10 +14,6 @@
 # fzf Section
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-#Aliases section
-alias q=exit
-alias vim=nvim
-alias neovim=nvim
 
 # Enable neofetch
 neofetch
@@ -101,13 +97,11 @@ zstyle ':omz:update' mode auto      # update automatically without asking
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-you-should-use zsh-bat z fzf extract command-not-found) 
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-you-should-use zsh-bat thefuck z fzf extract command-not-found) 
 
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
-export PATH="$HOME/.local/bin:$PATH"
-command -v thefuck &>/dev/null && eval "$(thefuck --alias)"
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
@@ -131,6 +125,9 @@ command -v thefuck &>/dev/null && eval "$(thefuck --alias)"
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias q=exit
+alias vim=nvim
+alias neovim=nvim
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
