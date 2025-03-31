@@ -126,21 +126,19 @@ update_and_install_packages() {
 # Returns:      - None
 ################################################################################
 detect_package_manager() {
-    COMMON_PACKAGES=(bat curl fzf git neofetch neovim thefuck uv wget zsh)
+    COMMON_PACKAGES=(bat btop curl fzf git neofetch neovim thefuck wget zsh)
     if command -v pacman &>/dev/null; then
-        update_and_install_packages "sudo pacman -Syu --noconfirm" "sudo pacman -S --noconfirm" git zsh wget curl neofetch bat thefuck fzf neovim
+        update_and_install_packages "sudo pacman -Syu --noconfirm" "sudo pacman -S --noconfirm" bat btop curl fzf git neofetch neovim thefuck wget zsh
     elif command -v brew &>/dev/null; then
-        update_and_install_packages "brew update" "brew install" git zsh wget curl neofetch bat thefuck fzf neovim
+        update_and_install_packages "brew update" "brew install" bat btop curl fzf git neofetch neovim thefuck wget zsh
     elif command -v apt &>/dev/null; then
-        update_and_install_packages "sudo apt update -y" "sudo apt install -y" git zsh wget curl neofetch bat python3-dev python3-pip python3-setuptools thefuck fzf neovim
+        update_and_install_packages "sudo apt update -y" "sudo apt install -y" bat btop curl fzf git neofetch neovim thefuck wget zsh
     elif command -v pkg &>/dev/null; then
-        update_and_install_packages "pkg upgrade -y" "pkg install -y" git zsh wget curl neofetch bat fzf neovim
+        update_and_install_packages "pkg upgrade -y" "pkg install -y" bat btop curl fzf git neofetch neovim thefuck wget zsh
     else
         echo "Unsupported package manager. The only supported package manager are Homebrew; APT; Pacman"
         exit 1
     fi
-    git clone https://github.com/DL909/thefuck.git &>/dev/null
-    pip install ./thefuck --break-system-packages &>/dev/null
 }
 
 ################################################################################
@@ -237,7 +235,7 @@ clean_up() {
     cd ..                                                   # Navigate to parent directory
     rm -rf ./Bash-To-ZSH-Initialization >/dev/null 2>&1 &   # Remove directory and its content
     spinner                                                 # Call spinner function to display animation
-    echo -ne " [✓]\n"                   # Update status after completion
+    echo -ne " [✓]\n"                                       # Update status after completion
 }
 
 ################################################################################
