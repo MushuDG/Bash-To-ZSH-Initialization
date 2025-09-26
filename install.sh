@@ -10,9 +10,6 @@
 #                       transitioning from Bash to Zsh shell environment.
 ################################################################################
 
-set -euo pipefail
-IFS=$'\n\t'
-
 ################################################################################
 # Function
 ################################################################################
@@ -23,20 +20,32 @@ IFS=$'\n\t'
 # Returns:      - None
 ################################################################################
 spinner() {
+    # Get the process ID of the background process
     local pid=$!
+
+    # Delay for spinner animation
     local delay=0.1
+
+    # Spinner characters
     local spinstr=('⣷' '⣯' '⣟' '⡿' '⢿' '⣻' '⣽' '⣾')
-    local i=0 n=${#spinstr[@]}
+    local i=0
+    local n=${#spinstr[@]}
+
+    # Hide cursor
     tput civis
-    trap 'tput cnorm' EXIT INT TERM
-    while kill -0 "$pid" 2>/dev/null; do
-        printf " [%s]  " "${spinstr[i]}"
-        i=$(( (i + 1) % n ))
-        sleep "$delay"
-        printf "\b\b\b\b\b\b"
+    trap "tput cnorm; exit" INT TERM
+
+    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+        printf " [%s]  " "${spinstr[i]}"            # Print spinner
+        i=$(( (i + 1) % n ))                        # Update spinner index
+        sleep $delay                                # Wait for animation delay
+        printf "\b\b\b\b\b\b"                       # Move cursor back to overwrite spinner
     done
+
+    # Restore cursor
+    trap - INT TERM
     tput cnorm
-    printf "    \b\b\b\b"
+    printf "    \b\b\b\b" # Clear spinner after completion
 }
 
 ################################################################################
@@ -49,13 +58,10 @@ spinner() {
 # Returns:      - None
 ################################################################################
 verify_root_permissions(){
-    if ! command -v sudo &>/dev/null; then
-        echo "This script requires sudo or root privileges."
-        exit 1
-    fi
+    # Check if the user is root
     if [[ $EUID -ne 0 ]]; then
-        echo "Some tasks need root privileges. Asking for sudo password..."
-        sudo -v
+        echo "This script requires root privileges to perform certain tasks."
+        sudo echo ""
     fi
 }
 
@@ -69,8 +75,8 @@ verify_root_permissions(){
 # Returns:      - None
 ################################################################################
 ask_for_pywal() {
-    echo "Are you using Pywal? [Y/n] (default: N)"
-    read -r use_pywal
+    echo "Are you using Pywal? [Y/n] (default: N)" # asks the user if they are using pywal
+    read use_pywal
     if [[ $use_pywal == "Y" || $use_pywal == "y" ]]; then
         sed -i'.bak' -e '6s/^.//' -e '9s/^.//' -e '12s/^.//' ./config/.zshrc
         echo "Pywal configurations applied."
@@ -91,22 +97,19 @@ ask_for_pywal() {
 # Returns:      - None
 ################################################################################
 update_and_install_packages() {
-    local update_command="$1"
-    local install_command="$2"
-    shift 2
-    local packages=("$@")
-    echo -ne "Updating packages..."
-    $update_command >/dev/null 2>&1 &
-    spinner; echo -ne " [✓]\n"
+    local update_command="$1"  # Command to update packages
+    local install_command="$2" # Command to install packages
+    local packages=("${@:3}")  # Array of packages to install
 
-    echo -ne "Installing packages..."
-    $install_command "${packages[@]}" >/dev/null 2>&1 &
-    spinner; echo -ne " [✓]\n"
+    echo -ne "Updating packages..."             # Display update process
+    $update_command >/dev/null 2>&1 &             # Execute update command in background
+    spinner                                     # Call spinner function to display animation
+    echo -ne " [✓]\n"    # Update status after completion
 
-    # Record installed names
-    for p in "${packages[@]}"; do
-        INSTALLED_PACKAGES[$p]="$PACKAGE_MANAGER"
-    done
+    echo -ne "Installing packages..."                       # Display installation process
+    $install_command "${packages[@]}" >/dev/null 2>&1 &     # Execute install command in background
+    spinner                                                 # Call spinner function to display animation
+    echo -ne " [✓]\n"           # Update status after completion
 }
 
 ################################################################################
@@ -119,60 +122,17 @@ update_and_install_packages() {
 # Returns:      - None
 ################################################################################
 detect_package_manager() {
-    PACKAGE_MANAGER=""
-    declare -gA INSTALLED_PACKAGES
-
-    # Common packages across systems
-    BASE_PKGS=(btop curl fzf git neofetch neovim wget zsh)
-
+    COMMON_PACKAGES=(bat btop curl fzf git neofetch neovim thefuck wget zsh)
     if command -v pacman &>/dev/null; then
-        PACKAGE_MANAGER="pacman"
-        update_and_install_packages "sudo pacman -Syu --noconfirm" \
-                                    "sudo pacman -S --noconfirm" \
-                                    bat thefuck "${BASE_PKGS[@]}"
-
+        update_and_install_packages "sudo pacman -Syu --noconfirm" "sudo pacman -S --noconfirm" bat btop curl fzf git neofetch neovim thefuck wget zsh
     elif command -v brew &>/dev/null; then
-        PACKAGE_MANAGER="brew"
-        update_and_install_packages "brew update" \
-                                    "brew install" \
-                                    bat thefuck "${BASE_PKGS[@]}"
-
+        update_and_install_packages "brew update" "brew install" bat btop curl fzf git neofetch neovim thefuck wget zsh
     elif command -v apt &>/dev/null; then
-        PACKAGE_MANAGER="apt"
-
-        # Detect Ubuntu vs Debian
-        local distro
-        distro="$(. /etc/os-release && echo "$ID")"
-
-        if [[ $distro == "ubuntu" ]]; then
-            # Ubuntu: bat -> batcat
-            APT_PKGS=(batcat python3-thefuck "${BASE_PKGS[@]}")
-            update_and_install_packages "sudo apt update" \
-                                        "sudo apt install -y" "${APT_PKGS[@]}"
-            INSTALLED_PACKAGES[bat]="batcat"
-            INSTALLED_PACKAGES[thefuck]="python3-thefuck"
-            # Symlink to uniform command names
-            if command -v batcat &>/dev/null && ! command -v bat &>/dev/null; then
-                sudo ln -sf "$(command -v batcat)" /usr/local/bin/bat
-            fi
-            if command -v python3-thefuck &>/dev/null && ! command -v thefuck &>/dev/null; then
-                sudo ln -sf "$(command -v python3-thefuck)" /usr/local/bin/thefuck
-            fi
-        else
-            # Debian: bat is bat
-            update_and_install_packages "sudo apt update" \
-                                        "sudo apt install -y" \
-                                        bat thefuck "${BASE_PKGS[@]}"
-        fi
-
+        update_and_install_packages "sudo apt update -y" "sudo apt install -y" bat btop curl fzf git neofetch neovim thefuck wget zsh
     elif command -v pkg &>/dev/null; then
-        PACKAGE_MANAGER="pkg"
-        update_and_install_packages "pkg upgrade -y" \
-                                    "pkg install -y" \
-                                    bat thefuck "${BASE_PKGS[@]}"
-
+        update_and_install_packages "pkg upgrade -y" "pkg install -y" bat btop curl fzf git neofetch neovim thefuck wget zsh
     else
-        echo "Unsupported package manager."
+        echo "Unsupported package manager. The only supported package manager are Homebrew; APT; Pacman"
         exit 1
     fi
 }
@@ -187,9 +147,10 @@ detect_package_manager() {
 # Returns:      - None
 ################################################################################
 install_oh_my_zsh() {
-    echo -ne "Installing Oh My Zsh..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" </dev/null >/dev/null 2>&1 &
-    spinner; echo -ne " [✓]\n"
+    echo -ne "Installing Oh My Zsh..."                                                                                              # Display installation process
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" </dev/null >/dev/null 2>&1 &    # Execute installation in background
+    spinner                                                                                                                         # Call spinner function to display animation
+    echo -ne " [✓]\n"                                                                                  # Update status after completion
 }
 
 ################################################################################
@@ -209,13 +170,13 @@ clone_plugins() {
         "https://github.com/zsh-users/zsh-syntax-highlighting.git"
         "https://github.com/agkozak/zsh-z.git"
     )
-    echo -ne "Cloning plugins..."
-    for plugin in "${plugins[@]}"; do
-        git clone --depth=1 "$plugin" \
-            "${ZSH_CUSTOM:-"$HOME/.oh-my-zsh/custom"}/plugins/$(basename "$plugin" .git)" >/dev/null 2>&1 &
-        spinner
-    done
-    echo -ne " [✓]\n"
+
+    echo -ne "Cloning plugins..."                                                                                                   # Display cloning process
+    for plugin in "${plugins[@]}"; do                                                                                               # Loop through plugins array
+        git clone --depth=1 "$plugin" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/$(basename $plugin .git)" >/dev/null 2>&1 &   # Clone plugin repository in background
+        spinner                                                                                                                     # Call spinner function to display animation
+    done    
+    echo -ne " [✓]\n"                                                                                       # Update status after completion
 }
 
 ################################################################################
@@ -228,8 +189,8 @@ clone_plugins() {
 # Returns:      - None
 ################################################################################
 remove_zsh_config() {
-    [ -e "$HOME/.zshrc" ] && rm -f "$HOME/.zshrc"
-    [ -e "$HOME/.p10k.zsh" ] && rm -f "$HOME/.p10k.zsh"
+    [ -e ~/.zshrc ] && rm -f ~/.zshrc
+    [ -e ~/.p10k.zsh ] && rm -f ~/.p10k.zsh # Remove .p10k.zsh if exists
 }
 
 ################################################################################
@@ -242,21 +203,18 @@ remove_zsh_config() {
 # Returns:      - None
 ################################################################################
 moving_config_files() {
-    cp -r "${ZSH_CUSTOM:-"$HOME/.oh-my-zsh"}/plugins/extract" \
-          "${ZSH_CUSTOM:-"$HOME/.oh-my-zsh/custom"}/plugins/extract" >/dev/null 2>&1 &
+    cp ${ZSH_CUSTOM:-~/.oh-my-zsh/}/plugins/extract ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/extract >/dev/null 2>&1 & # Copy extract plugin
+    spinner # Call spinner function to display animation
+    cp ${ZSH_CUSTOM:-~/.oh-my-zsh/}/plugins/command-not-found ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/command-not-found >/dev/null 2>&1 & # Copy command-not-found plugin
+    spinner                                       # Call spinner function to display animation
+    echo -ne "Downloading configuration files..." # Display downloading process
+    cp ./config/.p10k.zsh ~/.p10k.zsh >/dev/null 2>&1 & # Copy .p10k.zsh configuration
+    spinner # Call spinner function to display animation
+    cp ./config/.zshrc ~/.zshrc >/dev/null 2>&1 & # Copy .zshrc configuration
+    spinner                                                   # Call spinner function to display animation
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k >/dev/null 2>&1 & 
     spinner
-    cp -r "${ZSH_CUSTOM:-"$HOME/.oh-my-zsh"}/plugins/command-not-found" \
-          "${ZSH_CUSTOM:-"$HOME/.oh-my-zsh/custom"}/plugins/command-not-found" >/dev/null 2>&1 &
-    spinner
-    echo -ne "Downloading configuration files..."
-    cp ./config/.p10k.zsh "$HOME/.p10k.zsh" >/dev/null 2>&1 &
-    spinner
-    cp ./config/.zshrc "$HOME/.zshrc" >/dev/null 2>&1 &
-    spinner
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
-        "${ZSH_CUSTOM:-"$HOME/.oh-my-zsh/custom"}/themes/powerlevel10k" >/dev/null 2>&1 &
-    spinner
-    echo -ne " [✓]\n"
+    echo -ne " [✓]\n"                                                                                  # Update status after completion
 }
 
 ################################################################################
@@ -269,11 +227,11 @@ moving_config_files() {
 # Returns:      - None
 ################################################################################
 clean_up() {
-    echo -ne "Cleaning up..."
-    local script_dir
-    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    rm -rf "$script_dir" >/dev/null 2>&1 &
-    spinner; echo -ne " [✓]\n"
+    echo -ne "Cleaning up..."                               # Display cleanup process
+    cd ..                                                   # Navigate to parent directory
+    rm -rf ./Bash-To-ZSH-Initialization >/dev/null 2>&1 &   # Remove directory and its content
+    spinner                                                 # Call spinner function to display animation
+    echo -ne " [✓]\n"                                       # Update status after completion
 }
 
 ################################################################################
@@ -286,39 +244,18 @@ clean_up() {
 # Returns:      - None
 ################################################################################
 set_zsh_default() {
-    echo "Set Zsh as the default shell? [Y/n] (default: Y)"
-    read -r set_zsh_default
-    set_zsh_default="${set_zsh_default:-Y}"
-    if [[ $set_zsh_default == "N" || $set_zsh_default == "n" ]]; then
+    echo "Set Zsh as the default shell? [Y/n] (default: Y)"           # Prompt user to set Zsh as default shell
+    read -r set_zsh_default                                           # Read user input
+    set_zsh_default="${set_zsh_default:-Y}"                           # Set default value to Y if user input is empty
+    if [[ $set_zsh_default == "N" || $set_zsh_default == "n" ]]; then # Check if user confirms
         echo "Zsh is not set as the default shell."
     else
-        echo "Changing default shell..."
-        local zsh_path
-        zsh_path="$(command -v zsh)"
-        chsh -s "$zsh_path"
-        echo "Zsh is now the default shell."
+        echo "Changing default shell..."     # Display process
+        chsh -s /bin/zsh                     # Change default shell to Zsh
+        echo "Zsh is now the default shell." # Inform user about successful change
         clear
-        exec "$zsh_path"
+        zsh # Start Zsh shell
     fi
-}
-
-################################################################################
-# Function
-################################################################################
-################################################################################
-# Name:         show_summary
-# Goal:         Display installed packages summary
-# Parameters:   - None
-# Returns:      - None
-################################################################################
-show_summary() {
-    echo
-    echo "================ Installation summary ================"
-    echo "Package manager used: $PACKAGE_MANAGER"
-    for pkg in "${!INSTALLED_PACKAGES[@]}"; do
-        echo " - $pkg  →  installed as '${INSTALLED_PACKAGES[$pkg]}'"
-    done
-    echo "======================================================"
 }
 
 ################################################################################
@@ -333,14 +270,13 @@ show_summary() {
 main() {
     verify_root_permissions
     ask_for_pywal
-    detect_package_manager
-    install_oh_my_zsh
-    clone_plugins
-    remove_zsh_config
-    moving_config_files
-    clean_up
-    set_zsh_default
-    show_summary
+    detect_package_manager # Execute package manager detection
+    install_oh_my_zsh      # Execute Oh My Zsh installation
+    clone_plugins          # Execute Zsh plugin cloning
+    remove_zsh_config      # Execute existing Zsh configuration removal
+    moving_config_files    # Execute new Zsh configuration file moving
+    clean_up               # Execute cleanup process
+    set_zsh_default        # Prompt and set Zsh as default shell
 }
 
 # Run the main function

@@ -47,11 +47,11 @@ Tested successfully on the following systems:
 
 ✔️ WSL: Arch Linux
 
-✔️ WSL: Ubuntu
 
 ## 🛠️ Setup
 Clone the project using the following git command:
 ```bash
+cd /tmp
 git clone https://github.com/MushuDG/Bash-To-ZSH-Initialization.git
 ```
 Assign the appropriate permissions with the chmod command:
