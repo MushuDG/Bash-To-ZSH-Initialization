@@ -3,4 +3,4 @@
 
 # VSCodium
 .vscode/
-.tmp
+*.tmp
