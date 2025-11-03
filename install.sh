@@ -211,7 +211,9 @@ moving_config_files() {
     cp ./config/.p10k.zsh ~/.p10k.zsh >/dev/null 2>&1 & # Copy .p10k.zsh configuration
     spinner # Call spinner function to display animation
     cp ./config/.zshrc ~/.zshrc >/dev/null 2>&1 & # Copy .zshrc configuration
-    spinner                                                   # Call spinner function to display animation
+    spinner
+    cp ./config/logo_PLMTI.ascii ~/.config/neofetch/logo_PLMTI.ascii >/dev/null 2>&1 & # Copy neofetch logo
+    spinner                                                  # Call spinner function to display animation
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k >/dev/null 2>&1 & 
     spinner
     echo -ne " [✓]\n"                                                                                  # Update status after completion
