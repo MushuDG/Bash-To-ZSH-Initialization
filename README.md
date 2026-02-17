@@ -1,69 +1,92 @@
-# Bash-To-ZSH-Initialization Script
+# Bash-To-ZSH-Initialization
 
 ## 📝 Description
 
-The "Bash-To-ZSH-Initialization" script aims to streamline the transition from the Bash shell environment to Zsh. It automates the process of installing and configuring Zsh along with commonly used plugins and configurations, providing an enhanced and personalized user experience for Zsh users.
+**Bash-To-ZSH-Initialization** streamlines the transition from **Bash** to **Zsh** by automating the install of **Zsh**, **Oh My Zsh**, **Powerlevel10k**, and a curated set of plugins + tools on macOS and Linux.
 
-## 🚀 Features 
-✔️ **Detect Package Manager**: Detect the package manager being used and execute appropriate actions.
+## 🚀 What the script does
 
-✔️ **Update and Install Packages**: Update and install necessary packages using the appropriate package manager.
+- **Detects your platform / package manager**:
+  - **macOS** → Homebrew (`brew`)
+  - **Arch / Manjaro** → Pacman (`pacman`)
+  - **Debian / Ubuntu** → APT (`apt-get`)
+- **Updates repositories** and installs common CLI tools (quietly; logs printed only on errors).
+- **Installs Oh My Zsh** in **non-interactive mode** (it does **not** auto-switch to zsh and does **not** change your default shell during install).
+- **Installs Zsh plugins using the best method per platform**:
+  - packaged when available (with an Oh My Zsh wrapper so `plugins=(...)` works)
+  - otherwise via **git clone** (and updates on re-run)
+- **Copies your template configs** from `./config` to:
+  - `~/.zshrc`
+  - `~/.p10k.zsh`
+- **Patches `~/.zshrc` after copy** (the repo templates are not meant to be edited manually):
+  - enables **Pywal** lines if you answered “Yes”
+  - replaces a single `fastfetch`/`neofetch` line with an **auto-select block**
+  - enforces a consistent `plugins=(...)` order
+  - makes `ls` safe: uses `lsd` if installed, otherwise falls back to `ls -la`
+- **Optionally sets Zsh as your default shell** (`chsh`) at the end.
+- **Cleans up** the cloned directory at the end (see notes).
 
-✔️ **Install Oh My Zsh**: Install the Oh My Zsh framework for Zsh customization.
+## ⚙️ Packages installed
 
-✔️ **Clone Zsh Plugins**: Clone Zsh plugins from GitHub repositories to enhance Zsh functionality.
+Base packages (installed on all supported platforms):
 
-✔️ **Remove Existing Zsh Configurations**: Remove existing Zsh configuration files if present.
+- `bat` *(Debian/Ubuntu may expose it as `batcat`; the script creates a `bat` symlink when needed)*
+- `btop`, `curl`, `fzf`, `git`, `lsd`, `neovim`, `wget`, `zsh`
 
-✔️ **Download and Move Configuration Files**: Download new Zsh configuration files and move them to appropriate locations.
+Fetch tool:
 
-✔️ **Clean Up**: Clean up temporary files and directories after completion.
+- **macOS / Arch**: `fastfetch`
+- **Debian / Ubuntu**: `neofetch` *(and the script can still use `fastfetch` if you install it yourself later)*
 
-✔️ **Set Zsh as Default Shell**: Prompt the user to set Zsh as the default shell and execute the change.
+> **Ubuntu 24.04+ note**: the `thefuck` APT package is currently broken on some setups (Python `distutils` removal), so the script does **not** install it there by default. See “Troubleshooting”.
 
-## ⚙️ Plugins installed
+## 🔌 Plugins enabled in `~/.zshrc`
 
-These plugins enhance the functionality of Zsh by providing various features such as command auto-suggestion, advanced syntax highlighting, improved file system navigation, and more.
+The script enforces a consistent plugin order (after config copy). Enabled plugins include:
 
-* git
-* zsh-autosuggestions
-* zsh-syntax-highlighting
-* you-should-use
-* zsh-bat
-* thefuck
-* z
-* fzf
-* extract
-* command-not-found
+- `git`
+- `zsh-autosuggestions`
+- `zsh-syntax-highlighting`
+- `you-should-use`
+- `zsh-bat`
+- `zsh-z` *(provides the `z` command)*
+- `fzf`
+- `extract`
+- `command-not-found`
+- `thefuck` *(when available / stable on your platform; see Troubleshooting)*
 
+## ✅ Tested platforms
 
-## 🛠️ Compatible Hardware
-
-Tested successfully on the following systems:
-
-✔️ [RaspberryPiOS 2022-04-04 - Debian 11 - Linux Kernel 5.15](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2022-04-07/2022-04-04-raspios-bullseye-armhf-lite.img.xz)
-
-✔️ MacOS
-
-✔️ WSL: Arch Linux
-
+- **macOS** (Homebrew required)
+- **Arch Linux** (Pacman)
+- **Debian** (APT)
+- **Ubuntu** (APT)
+- Works well in **VMware** and **WSL** as long as the package manager is supported.
 
 ## 🛠️ Setup
-Clone the project using the following git command:
+
+Clone the project (recommended in `/tmp` because the script can remove the folder during cleanup):
+
 ```bash
 cd /tmp
 git clone https://github.com/MushuDG/Bash-To-ZSH-Initialization.git
+cd Bash-To-ZSH-Initialization
+chmod +x install.sh
 ```
-Assign the appropriate permissions with the chmod command:
-```bash
-chmod -R 740 ./Bash-To-ZSH-Initialization/
-```
+
 ## 🚀 Installation
-Run install script:
-```
-cd ./Bash-To-ZSH-Initialization
+
+```bash
 ./install.sh
 ```
+
+## 🧩 Troubleshooting / Notes
+
+- **Back up your current config** if you have one: the script overwrites `~/.zshrc` and `~/.p10k.zsh`.
+- **macOS**: you must install **Homebrew** first.
+- **Ubuntu 24.04+**: if you see errors with `thefuck`, remove it from `plugins=(...)` in `~/.zshrc` or install it via another method (pipx, pip, etc.).
+- The script needs an **internet connection** (packages + GitHub).
+- Cleanup may remove the cloned folder. Keep the repo in a disposable location (like `/tmp`) when running the installer.
 
 ## Fonts
 
@@ -103,12 +126,6 @@ If you are using a different terminal, proceed with manual font installation. �
    - [MesloLGS NF Bold Italic.ttf](
        https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf)
 
-## ⚠️ Notes
-
-- Make sure to review the script before execution.
-- The script assumes an internet connection for package installation.
-- Optionally set Zsh as the default shell for the current user.
-
 ## 📄 License
 
-This script is released under the [MIT license](https://raw.githubusercontent.com/MushuDG/Bash-To-ZSH-Initialization/main/LICENSE).
+This project is released under the [MIT license](https://raw.githubusercontent.com/MushuDG/Bash-To-ZSH-Initialization/main/LICENSE).
