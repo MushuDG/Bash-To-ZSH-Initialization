@@ -741,7 +741,7 @@ patch_user_zshrc() {
     local zshrc="$HOME/.zshrc"
     [[ -f "$zshrc" ]] || return 0
 
-    # Plugins you want (with syntax-highlighting last)
+    # Plugins you want (syntax-highlighting last)
     local plugins_line
     if is_ubuntu_2404_plus; then
         plugins_line="plugins=(git zsh-autosuggestions you-should-use zsh-bat zsh-z fzf extract command-not-found zsh-syntax-highlighting)"
@@ -756,48 +756,42 @@ patch_user_zshrc() {
       BEGIN {
         in_fetch = 0
         inserted = 0
-
-        fetch_block =
-          "# >>> BTZSH FETCH START\n" \
-          "if command -v fastfetch >/dev/null 2>&1; then\n" \
-          "  if [[ -r \"$HOME/images/arch-linux.png\" ]]; then\n" \
-          "    fastfetch --logo-type chafa --logo \"$HOME/images/arch-linux.png\" --logo-width 32\n" \
-          "  else\n" \
-          "    fastfetch\n" \
-          "  fi\n" \
-          "elif command -v neofetch >/dev/null 2>&1; then\n" \
-          "  neofetch\n" \
-          "fi\n" \
-          "# <<< BTZSH FETCH END"
-
-        ls_line =
-          "command -v lsd >/dev/null 2>&1 && alias ls='\''lsd -la'\'' || alias ls='\''ls -la'\''"
+        ls_line = "command -v lsd >/dev/null 2>&1 && alias ls='\''lsd -la'\'' || alias ls='\''ls -la'\''"
       }
 
-      # 1) Remove any previously managed fetch block
+      # Remove any previously managed fetch block
       $0 ~ /^# >>> BTZSH FETCH START$/ { in_fetch=1; next }
       $0 ~ /^# <<< BTZSH FETCH END$/   { in_fetch=0; next }
       in_fetch==1 { next }
 
-      # 2) Remove any existing fetch invocation lines (plain or with args)
-      #    This prevents duplicates and keeps the block unique.
+      # Remove any existing fetch invocation lines (plain or with args)
       $0 ~ /^[[:space:]]*(fastfetch|neofetch)([[:space:]].*)?$/ { next }
 
-      # 3) Insert the managed fetch block right after the comment (if present)
+      # Insert fetch block right after the anchor comment, only once
       $0 ~ /^# Enable fastfetch/ && inserted==0 {
         print
-        print fetch_block
+        print "# >>> BTZSH FETCH START"
+        print "if command -v fastfetch >/dev/null 2>&1; then"
+        print "  if [[ -r \"$HOME/images/arch-linux.png\" ]]; then"
+        print "    fastfetch --logo-type chafa --logo \"$HOME/images/arch-linux.png\" --logo-width 32"
+        print "  else"
+        print "    fastfetch"
+        print "  fi"
+        print "elif command -v neofetch >/dev/null 2>&1; then"
+        print "  neofetch"
+        print "fi"
+        print "# <<< BTZSH FETCH END"
         inserted=1
         next
       }
 
-      # 4) Force consistent plugins line
+      # Force plugins list
       $0 ~ /^plugins=\(/ { print plugins_line; next }
 
-      # 5) Make ls alias safe if lsd is missing
+      # Make ls alias safe
       $0 ~ /^alias ls=/ { print ls_line; next }
 
-      # 6) Enable pywal lines only if user chose it
+      # Enable pywal lines only if user chose it
       use_pywal==1 && $0=="#(cat ~/.cache/wal/sequences &)" { print "(cat ~/.cache/wal/sequences &)"; next }
       use_pywal==1 && $0=="#cat ~/.cache/wal/sequences"     { print "cat ~/.cache/wal/sequences"; next }
       use_pywal==1 && $0=="#source ~/.cache/wal/colors-tty.sh" { print "source ~/.cache/wal/colors-tty.sh"; next }
@@ -805,10 +799,20 @@ patch_user_zshrc() {
       { print }
 
       END {
-        # If we didn’t find the comment anchor, append the block once at end
+        # If anchor comment not found, append block once at end
         if (inserted==0) {
           print ""
-          print fetch_block
+          print "# >>> BTZSH FETCH START"
+          print "if command -v fastfetch >/dev/null 2>&1; then"
+          print "  if [[ -r \"$HOME/images/arch-linux.png\" ]]; then"
+          print "    fastfetch --logo-type chafa --logo \"$HOME/images/arch-linux.png\" --logo-width 32"
+          print "  else"
+          print "    fastfetch"
+          print "  fi"
+          print "elif command -v neofetch >/dev/null 2>&1; then"
+          print "  neofetch"
+          print "fi"
+          print "# <<< BTZSH FETCH END"
         }
       }
     ' "$zshrc" > "$tmp" && mv "$tmp" "$zshrc"
