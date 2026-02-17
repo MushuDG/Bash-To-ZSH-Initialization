@@ -772,11 +772,7 @@ patch_user_zshrc() {
         print
         print "# >>> BTZSH FETCH START"
         print "if command -v fastfetch >/dev/null 2>&1; then"
-        print "  if [[ -r \"$HOME/images/arch-linux.png\" ]]; then"
-        print "    fastfetch --logo-type chafa --logo \"$HOME/images/arch-linux.png\" --logo-width 32"
-        print "  else"
-        print "    fastfetch"
-        print "  fi"
+        print "  fastfetch"
         print "elif command -v neofetch >/dev/null 2>&1; then"
         print "  neofetch"
         print "fi"
