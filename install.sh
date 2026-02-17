@@ -128,11 +128,6 @@ update_and_install_packages() {
     # Optional packages: script stays functional without them
     local -a OPTIONAL_PACKAGES=(thefuck neofetch fastfetch)
 
-    # Compatibility for mktemp on different platforms (e.g., BSD vs GNU)
-    _mktemp_compat() {
-        mktemp 2>/dev/null || mktemp -t pkglog.XXXXXX
-    }
-
     # Check if a package is in the optional list
     _is_optional() {
         local p="$1"
@@ -168,7 +163,7 @@ update_and_install_packages() {
     #########################
     # UPDATE
     #########################
-    log="$(_mktemp_compat)"
+    log="$(mktemp_compat)"
     echo -ne "Updating packages..."
 
     # Run the update command in the background, redirecting output to a log file
@@ -228,7 +223,7 @@ update_and_install_packages() {
     # INSTALL
     #########################
     # Install the available packages, showing a spinner and logging output. If installation fails, show the log.
-    log="$(_mktemp_compat)"
+    log="$(mktemp_compat)"
     echo -ne "Installing packages..."
 
     # Run the install command in the background, redirecting output to a log file
@@ -646,35 +641,26 @@ remove_zsh_config() {
 #               Oh My Zsh plugins are copied to the custom plugins directory.   #
 #               The function uses a spinner to indicate progress during         #
 #               the copying process, providing a better user experience.        #
-#               It also calls the patch_user_zshrc_plugins_and_fetch function   #
-#               to ensure that the .zshrc file is properly patched with         #
-#               the correct plugins and fetch block. Additionally, it clones    #
-#               the Powerlevel10k theme from its git repository into            #
-#               the Oh My Zsh custom themes directory.                          #
 #                                                                               #
 # Args:         - None                                                          #
 # Returns:      - None                                                          #
 #################################################################################
 moving_config_files() {
-    # Copy plugin files to the Oh My Zsh custom plugins directory, showing a spinner for each copy operation
-    cp ${ZSH_CUSTOM:-~/.oh-my-zsh/}/plugins/extract ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/extract >/dev/null 2>&1 &
-    spinner
-    cp ${ZSH_CUSTOM:-~/.oh-my-zsh/}/plugins/command-not-found ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/command-not-found >/dev/null 2>&1 &
-    spinner
+    run_quiet "Copying OMZ extract plugin" cp -r "${ZSH:-$HOME/.oh-my-zsh}/plugins/extract" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/extract"
+    run_quiet "Copying OMZ command-not-found plugin" cp -r "${ZSH:-$HOME/.oh-my-zsh}/plugins/command-not-found" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/command-not-found"
 
-    # Copy the .zshrc and .p10k.zsh configuration files to the user's home directory, showing a spinner for each copy operation. 
-    # Also, patch the .zshrc file to ensure it has the correct plugins and fetch block.
-    echo -ne "Downloading configuration files..."
-    cp ./config/.p10k.zsh ~/.p10k.zsh >/dev/null 2>&1 &
-    spinner
-    cp ./config/.zshrc ~/.zshrc >/dev/null 2>&1 &
-    patch_user_zshrc_plugins_and_fetch
-    spinner
+    run_quiet "Copying .p10k.zsh" cp ./config/.p10k.zsh "$HOME/.p10k.zsh"
+    run_quiet "Copying .zshrc" cp ./config/.zshrc "$HOME/.zshrc"
 
-    # Clone Powerlevel10k theme into the Oh My Zsh custom themes directory, showing a spinner during the cloning process
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k >/dev/null 2>&1 & 
-    spinner
-    echo -ne " [✓]\n"
+    # Powerlevel10k theme: update if already exists
+    local p10k_dir="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+    if [[ -d "$p10k_dir/.git" ]]; then
+        run_quiet "Updating Powerlevel10k" git -C "$p10k_dir" pull --ff-only
+    elif [[ -d "$p10k_dir" ]]; then
+        echo "Skipping Powerlevel10k: $p10k_dir exists but is not a git repo." >&2
+    else
+        run_quiet "Installing Powerlevel10k" git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$p10k_dir"
+    fi
 }
 
 
@@ -752,45 +738,79 @@ set_zsh_default() {
 # Returns:      - None                                                          #
 #################################################################################
 patch_user_zshrc() {
-    # Local variable for the path to the user's .zshrc file
     local zshrc="$HOME/.zshrc"
     [[ -f "$zshrc" ]] || return 0
 
-    # Create a temporary file for processing the .zshrc content. This will be used to store the modified content before replacing the original .zshrc file.
+    # Plugins you want (with syntax-highlighting last)
+    local plugins_line
+    if is_ubuntu_2404_plus; then
+        plugins_line="plugins=(git zsh-autosuggestions you-should-use zsh-bat zsh-z fzf extract command-not-found zsh-syntax-highlighting)"
+    else
+        plugins_line="plugins=(git zsh-autosuggestions you-should-use zsh-bat thefuck zsh-z fzf extract command-not-found zsh-syntax-highlighting)"
+    fi
+
     local tmp
     tmp="$(mktemp_compat)"
 
-    # Use awk to process the .zshrc file line by line, looking for specific patterns to replace. The script will handle the following:
-    # - Replace any existing single fastfetch or neofetch line with a block that checks for both and runs the one that is available.
-    # - Force a consistent plugins line with the correct order of plugins.
-    # - Make the ls alias safe by checking for the presence of lsd and aliasing ls to lsd if it is available, or to a safe default if not.
-    # - If the user chose to use pywal, enable the lines that source the pywal colors.
-    awk -v use_pywal="$USE_PYWAL" '
+    awk -v use_pywal="$USE_PYWAL" -v plugins_line="$plugins_line" '
       BEGIN {
-        fetch_block = "if command -v fastfetch >/dev/null 2>/dev/null; then\n" \
-                      "  fastfetch\n" \
-                      "elif command -v neofetch >/dev/null 2>/dev/null; then\n" \
-                      "  neofetch\n" \
-                      "fi"
-        plugins_line = "plugins=(git zsh-autosuggestions you-should-use zsh-bat thefuck zsh-z fzf extract command-not-found zsh-syntax-highlighting)"
-        ls_line = "command -v lsd >/dev/null 2>/dev/null && alias ls='\''lsd -la'\'' || alias ls='\''ls -la'\''"
+        in_fetch = 0
+        inserted = 0
+
+        fetch_block =
+          "# >>> BTZSH FETCH START\n" \
+          "if command -v fastfetch >/dev/null 2>&1; then\n" \
+          "  if [[ -r \"$HOME/images/arch-linux.png\" ]]; then\n" \
+          "    fastfetch --logo-type chafa --logo \"$HOME/images/arch-linux.png\" --logo-width 32\n" \
+          "  else\n" \
+          "    fastfetch\n" \
+          "  fi\n" \
+          "elif command -v neofetch >/dev/null 2>&1; then\n" \
+          "  neofetch\n" \
+          "fi\n" \
+          "# <<< BTZSH FETCH END"
+
+        ls_line =
+          "command -v lsd >/dev/null 2>&1 && alias ls='\''lsd -la'\'' || alias ls='\''ls -la'\''"
       }
 
-      # Replace single fastfetch/neofetch line with an auto-select block
-      $0 ~ /^[[:space:]]*(fastfetch|neofetch)[[:space:]]*$/ { print fetch_block; next }
+      # 1) Remove any previously managed fetch block
+      $0 ~ /^# >>> BTZSH FETCH START$/ { in_fetch=1; next }
+      $0 ~ /^# <<< BTZSH FETCH END$/   { in_fetch=0; next }
+      in_fetch==1 { next }
 
-      # Force consistent plugins line + correct order
+      # 2) Remove any existing fetch invocation lines (plain or with args)
+      #    This prevents duplicates and keeps the block unique.
+      $0 ~ /^[[:space:]]*(fastfetch|neofetch)([[:space:]].*)?$/ { next }
+
+      # 3) Insert the managed fetch block right after the comment (if present)
+      $0 ~ /^# Enable fastfetch/ && inserted==0 {
+        print
+        print fetch_block
+        inserted=1
+        next
+      }
+
+      # 4) Force consistent plugins line
       $0 ~ /^plugins=\(/ { print plugins_line; next }
 
-      # Make ls alias safe if lsd is missing
+      # 5) Make ls alias safe if lsd is missing
       $0 ~ /^alias ls=/ { print ls_line; next }
 
-      # Enable pywal lines only if user chose it
+      # 6) Enable pywal lines only if user chose it
       use_pywal==1 && $0=="#(cat ~/.cache/wal/sequences &)" { print "(cat ~/.cache/wal/sequences &)"; next }
       use_pywal==1 && $0=="#cat ~/.cache/wal/sequences"     { print "cat ~/.cache/wal/sequences"; next }
       use_pywal==1 && $0=="#source ~/.cache/wal/colors-tty.sh" { print "source ~/.cache/wal/colors-tty.sh"; next }
 
       { print }
+
+      END {
+        # If we didn’t find the comment anchor, append the block once at end
+        if (inserted==0) {
+          print ""
+          print fetch_block
+        }
+      }
     ' "$zshrc" > "$tmp" && mv "$tmp" "$zshrc"
 }
 
@@ -828,66 +848,6 @@ is_ubuntu_2404_plus() {
 
 
 #################################################################################
-# patch_user_zshrc_plugins_and_fetch                                            #
-#################################################################################
-# Description:  Patches the user's .zshrc file to ensure it has the correct     #
-#               plugins and fetch block. This function is similar               #
-#               to patch_user_zshrc, but it only focuses on ensuring that       #
-#               the plugins line is correct and that the fetch block            #
-#               is properly set up. It uses awk to process the .zshrc file      #
-#               line by line, looking for the plugins line and any existing     #
-#               fastfetch/neofetch lines. It replaces the plugins line with     #
-#               a consistent one that includes the correct plugins in           #
-#               the desired order. It also replaces any existing single         #
-#               fastfetch or neofetch line with a block that checks for both    #
-#               and runs the one that is available.                             #
-#                                                                               #
-# Args:         - None                                                          #
-# Returns:      - None                                                          #
-#################################################################################
-patch_user_zshrc_plugins_and_fetch() {
-    # Local variable for the path to the user's .zshrc file
-    local zshrc="$HOME/.zshrc"
-    [[ -f "$zshrc" ]] || return 0
-
-    # Define the desired plugins line based on the detected Ubuntu version. If the system is Ubuntu 24.04 or later, 
-    # the plugins line will exclude "thefuck" due to compatibility issues.
-    # Otherwise, it will include "thefuck". This ensures that the .zshrc file is patched with the correct plugins based on the user's system.
-    local plugins_line
-    if is_ubuntu_2404_plus; then
-        plugins_line="plugins=(git zsh-autosuggestions zsh-you-should-use zsh-bat z fzf extract command-not-found zsh-syntax-highlighting)"
-    else
-        plugins_line="plugins=(git zsh-autosuggestions zsh-you-should-use zsh-bat thefuck z fzf extract command-not-found zsh-syntax-highlighting)"
-    fi
-
-    # Create a temporary file for processing the .zshrc content. This will be used to store the modified content before replacing the original .zshrc file.
-    local tmp
-    tmp="$(mktemp_compat)"
-
-    # Use awk to process the .zshrc file line by line, looking for the plugins line and any existing fastfetch/neofetch lines.
-    # It replaces the plugins line with a consistent one that includes the correct plugins in the desired order. 
-    # It also replaces any existing single fastfetch or neofetch line with a block that checks for both and runs the one that is available.
-    awk -v plugins_line="$plugins_line" '
-      BEGIN {
-        fetch_block = "if command -v fastfetch >/dev/null 2>/dev/null; then\n" \
-                      "  fastfetch\n" \
-                      "elif command -v neofetch >/dev/null 2>/dev/null; then\n" \
-                      "  neofetch\n" \
-                      "fi"
-      }
-
-      # Replace a single fastfetch/neofetch line by an auto-select block
-      $0 ~ /^[[:space:]]*(fastfetch|neofetch)[[:space:]]*$/ { print fetch_block; next }
-
-      # Force plugins list (and keep syntax-highlighting last)
-      $0 ~ /^plugins=\(/ { print plugins_line; next }
-
-      { print }
-    ' "$zshrc" > "$tmp" && mv "$tmp" "$zshrc"
-}
-
-
-#################################################################################
 # clean_up                                                                      #
 #################################################################################
 # Description:  Cleans up the installation files by removing the temporary      #
@@ -904,13 +864,10 @@ patch_user_zshrc_plugins_and_fetch() {
 # Returns:      - None                                                          #
 #################################################################################
 clean_up() {
-    # Clean up installation files by removing the temporary directory used for the installation process. 
-    # This will remove the "Bash-To-ZSH-Initialization" directory along with all its contents.
+    local script_dir
+    script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
     echo -ne "Cleaning up..."
-    cd ..
-    rm -rf ./Bash-To-ZSH-Initialization >/dev/null 2>&1 &
-    spinner
-    echo -ne " [✓]\n"
+    run_quiet "Cleaning up" rm -rf "$script_dir"
 }
 
 
